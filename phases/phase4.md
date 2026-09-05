@@ -1,32 +1,35 @@
-# Phase 4: Native HIP C++ Kernel Development and GPU Profiling on AMD Instinct MI300X
+# Phase 4: Native AMD ROCm/HIP C++ Coherent Erosion Kernel & MI300X Hardware Profiling
+
+Work autonomously in the IsoAntiSAM repository and complete Phase 4. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 3. This phase implements hardware-level acceleration on AMD Instinct MI300X GPUs.
 
 ## 1. Objective
-Develop, optimize, and profile native AMD ROCm/HIP C++ kernels for fused Bilateral Coherence reduction and parameter perturbation on 1x AMD Instinct MI300X (`gfx942`).
-Eliminate Python CPU-GPU synchronization bottlenecks by performing cross-batch inner product reductions and in-place tensor additions entirely within AMD wavefronts (64 threads).
+Develop a high-performance native AMD ROCm/HIP C++ fused kernel targeting the **AMD Instinct MI300X** architecture (`gfx942`). Eliminate Python overhead by fusing cross-batch inner product reductions ($\langle g_1, g_2 \rangle$, $\|g_1\|^2$, $\|g_2\|^2$, $\|g_{\text{avg}}\|^2$), coherence gate evaluation, and in-place weight perturbation into a single high-throughput GPU kernel.
 
-## 2. Hardware Environment
-- Accelerator: 1x AMD Instinct MI300X (750W, 192GB HBM3, `gfx942`)
-- Compiler: `/opt/rocm/bin/hipcc` (ROCm 6.3 / HIP 7.15)
+## 2. Required Work
+1. **Hardware Inventory & Environment Verification**:
+   - Query and log AMD GPU specifications via `rocm-smi`: verify MI300X VF architecture, HBM3 memory capacity (192–205 GB), compute units, and driver status.
+   - Verify compiler toolchain: check `/opt/rocm/bin/hipcc --version` and ROCm 6.3 runtime paths.
+2. **Native HIP Fused Kernel Development**:
+   - Implement `kernels/coherent_erosion_kernel.hip`:
+     - Utilize 64-wide wavefront shuffle instructions (`__shfl_down`) native to AMD GCN/CDNA architectures.
+     - Stage 1: Parallel reduction over gradients $g_1, g_2$ to accumulate scalar dot products and squared norms in shared memory and block-level atomics.
+     - Stage 2: Scalar gate calculation in FP32: $\operatorname{gate} = \max(0, \langle g_1, g_2 \rangle / (\|g_1\| \|g_2\|))$.
+     - Stage 3: Vectorized coalesced write back to parameter memory $w_i \leftarrow w_i - \rho \cdot \operatorname{gate} \cdot \frac{g_{\text{avg}, i}}{\|g_{\text{avg}}\|}$.
+3. **Rigorous Numerical Validation**:
+   - Build a standalone verification binary `kernels/test_kernel.cpp`:
+     - Compare the native HIP GPU output against a 64-bit double-precision CPU golden reference on $N = 1,000,000$ elements.
+     - Measure relative error of dot products and vector norms.
+     - Measure maximum absolute deviation of perturbed parameter arrays.
+4. **Throughput & Latency Benchmarking**:
+   - Benchmark kernel execution latency across parameter sizes $N \in [10^5, 10^7]$.
+   - Ensure the fused kernel executes in $< 3.0$ ms for $N = 1,000,000$ parameters on MI300X.
+   - Compare memory bandwidth against theoretical HBM3 peak.
 
-## 3. Execution Commands
-```bash
-cd /root/iso-anti-sam/kernels
-/opt/rocm/bin/hipcc -O3 --offload-arch=gfx942 \
-  coherent_erosion_kernel.hip test_kernel.cpp \
-  -o test_kernel
-./test_kernel
-```
-
-## 4. Expected Outputs & Success Criteria
-1. Clean compilation with returncode 0.
-2. Kernel execution runtime on 1,000,000 elements < 3.0 ms on MI300X.
-3. Verification that scalar reductions (`dot`, `norm1_sq`, `norm2_sq`, `norm_avg_sq`) match host CPU calculations within relative tolerance $10^{-4}$.
-4. Parameter array correctly updated in-place on device memory.
-
-## 5. Self-Correcting Autonomous Fallback Loop
-If HIP kernel fails or performance degrades:
-1. **Activate `experimental-research` skill** (`/root/skills_repo/experimental-research/SKILL.md`) and consult `references/simulation-and-measurement.md`.
-2. Check architecture target: ensure `--offload-arch=gfx942` is specified.
-3. Inspect wavefront shuffle intrinsics: verify `__shfl_down` operates across 64-lane boundaries.
-4. If atomic collisions occur during multi-block reduction, transition to a two-pass parallel reduction tree.
-5. Benchmark with `rocprof` or `hipEvent` until execution time and accuracy targets are satisfied.
+## 3. Gate Criteria
+Phase 4 passes only if:
+- `coherent_erosion_kernel.hip` compiles cleanly with `/opt/rocm/bin/hipcc -O3 --offload-arch=gfx942`.
+- Standalone test binary runs without errors, warnings, or ROCm memory faults.
+- Kernel execution time for $N = 1,000,000$ parameters is **$< 3.0$ ms** on AMD Instinct MI300X.
+- Scalar reduction relative error is **$< 10^{-4}$** vs double-precision CPU reference.
+- Parameter array maximum elementwise deviation is **$< 10^{-6}$**.
+- Standard Phase 4 artifacts (`report.md`, `manifest.json`, `commands.log`, `phases/status/phase4.json`) are written.

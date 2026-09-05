@@ -1,37 +1,34 @@
-# Phase 5: Small NLP Benchmark: WikiText-103 Baseline Setup on 1x AMD MI300X
+# Phase 5: Small-Scale Falsification, Multi-Workload Screening & WikiText-103 Baselines
+
+Work autonomously in the IsoAntiSAM repository and complete Phase 5. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 4. This phase tests whether the morphological erosion advantage and caustic protection hold in real autoregressive language modeling workloads before large-scale pretraining.
 
 ## 1. Objective
-Establish a reproducible, clean baseline benchmark on a standard small NLP task (WikiText-103 language modeling) using a causal Transformer (GPT-2 style architecture) on 1x AMD Instinct MI300X accelerator.
+Establish an empirical screening pipeline on real NLP benchmarks using a 6-layer causal Transformer on **WikiText-103**. Evaluate IsoAntiSAM against established baselines (AdamW, SGD with momentum, and Standard SAM) under identical token streams, compute budgets, and sequence length. Confirm that IsoAntiSAM avoids the caustic overfitting of Raw Anti-SAM and exhibits synchronous training and validation descent.
 
-## 2. Research Contract
-- Task: Autoregressive Language Modeling (WikiText-103).
-- Architecture: 6-layer causal Transformer (dim=384, heads=6, seq_len=256, ~15M parameters).
-- Metric: Perplexity (PPL) and Cross-Entropy Validation Loss.
-- Hardware: 1x AMD Instinct MI300X (192GB VRAM).
-- Baseline optimizers: Standard SGD with momentum, AdamW.
+## 2. Required Work
+1. **WikiText-103 Data Pipeline & Sharding**:
+   - Download WikiText-103 and tokenize into deterministic binary memory-mapped shards (`train_tokens.npy`, `val_tokens.npy`) using a 10,000-token BPE / byte vocabulary.
+   - Establish high-throughput PyTorch dataset and zero-copy dataloaders with fixed sequence length $L = 256$.
+2. **Model Architecture & Acceleration**:
+   - Construct a 6-layer causal Transformer (~14.59M parameters, hidden dimension 384, 6 attention heads).
+   - Integrate native PyTorch FlashAttention via Scaled Dot-Product Attention (`F.scaled_dot_product_attention(is_causal=True)`), dispatching directly to AMD ROCm CK/AOTriton kernels on `gfx942`.
+3. **Equal-Budget Baseline Screening**:
+   - Execute controlled, compute-matched benchmark runs across:
+     - **AdamW Baseline** ($lr = 5 \times 10^{-4}$, weight decay 0.01).
+     - **SGD Baseline** ($lr = 0.05$, momentum 0.9).
+     - **Standard SAM** ($\rho = 0.05$, AdamW base).
+     - **Raw Anti-SAM** ($\rho = 0.05$, AdamW base).
+     - **IsoAntiSAM (Ours)** ($\rho = 0.05$, bilateral coherence gating, AdamW base).
+   - Enforce identical batch size ($B = 64$), identical cosine learning rate schedule with warmup, and identical random seed (`seed=42`).
+4. **Generalization & Overfitting Diagnostics**:
+   - Measure validation cross-entropy loss, perplexity (PPL), and epoch training duration.
+   - Track the generalization divergence gap: $\Delta(t) = |L_{\text{val}}(t) - L_{\text{train}}(t)|$.
+   - Verify that IsoAntiSAM avoids the rapid validation divergence characteristic of Raw Anti-SAM.
 
-## 3. Execution Commands
-```bash
-python3 -c "
-import urllib.request
-import os
-
-data_dir = '/root/iso-anti-sam/data/wikitext103'
-os.makedirs(data_dir, exist_ok=True)
-print('Setting up WikiText-103 data pipeline...')
-"
-python3 /root/iso-anti-sam/benchmarks/train_wikitext.py --optimizer adamw --epochs 5 --device cuda:0
-```
-
-## 4. Expected Outputs & Success Criteria
-1. Baseline training completes without out-of-memory (OOM) or NaNs.
-2. AdamW baseline establishes reference validation perplexity.
-3. Checkpoints and loss curves logged in `/root/iso-anti-sam/logs/wikitext/`.
-
-## 5. Self-Correcting Autonomous Fallback Loop
-If training crashes or baseline perplexity is poor:
-1. **Activate `ml-research` skill** (`/root/skills_repo/ml-research/SKILL.md`) and consult `references/experiment-protocol.md`.
-2. Check tokenization and vocabulary offsets (ensure pad and EOS tokens do not leak into loss calculation).
-3. Check learning rate schedule (cosine warmup vs linear decay).
-4. Verify ROCm PyTorch memory management: set `PYTORCH_HIP_ALLOC_CONF=garbage_collection_threshold:0.8,max_split_size_mb:512`.
-5. Repeat until baseline runs cleanly and records verified loss curve.
+## 3. Gate Criteria
+Phase 5 passes only if:
+- WikiText-103 token shards are fully generated and verified with deterministic token counts.
+- 6-layer causal Transformer trains with **zero OOM errors** and **zero NaNs** on 1x AMD Instinct MI300X.
+- All baseline optimizer histories are logged to structured JSON files under `logs/wikitext/`.
+- Training loss and validation loss descend synchronously under IsoAntiSAM without catastrophic divergence.
+- Standard Phase 5 artifacts (`report.md`, `manifest.json`, `commands.log`, `phases/status/phase5.json`) are written.

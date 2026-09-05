@@ -1,40 +1,37 @@
-# Phase 9: 350M Parameter Model Pretraining on 3B Tokens FineWeb-Edu on 8x AMD MI300X
+# Phase 9: Cross-Scale Generalization Analysis, Downstream Benchmarks & Final Paper
+
+Work autonomously in the IsoAntiSAM repository and complete Phase 9. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 8. This phase consolidates all empirical and theoretical findings into publication-ready research artifacts.
 
 ## 1. Objective
-Scale the IsoAntiSAM optimizer to a 350 Million parameter causal Transformer trained across 3 Billion tokens of FineWeb-Edu on 8x AMD Instinct MI300X GPUs (full node scale).
-Evaluate empirical scaling laws, wall-clock efficiency, and generalization transfer.
+Execute downstream zero-shot evaluation of pretrained checkpoints, extract empirical neural scaling exponents across model scales (14M, 125M, 350M), conduct ablation diagnostics on the isochoric gauge and bilateral gating mechanisms, and compile the final publication-ready manuscript in LaTeX.
 
-## 2. Model & Training Architecture
-- Parameters: 350 Million (Layers: 24, Hidden Dim: 1024, Heads: 16, Intermediate Dim: 4096, Max Seq Len: 2048).
-- Tokens: 3,000,000,000 tokens (3B tokens) from FineWeb-Edu.
-- Hardware: 8x AMD Instinct MI300X (total 1536 GB HBM3 memory, interconnected via high-bandwidth infinity fabric).
-- Precision: BF16 mixed precision with native ROCm FlashAttention.
-- Target Metric: Validation cross-entropy loss, token throughput, downstream zero-shot accuracy.
+## 2. Required Work
+1. **Downstream Zero-Shot Evaluation**:
+   - Evaluate the final checkpoints of the 125M and 350M models using `lm-evaluation-harness` across standard reasoning and knowledge benchmarks:
+     - ARC-Easy / ARC-Challenge
+     - HellaSwag
+     - PIQA
+     - MMLU (5-shot)
+     - Lambada
+   - Compare zero-shot accuracy between IsoAntiSAM and AdamW checkpoints.
+2. **Cross-Scale Empirical Scaling Analysis**:
+   - Fit compute-optimal scaling laws: compute cross-entropy validation loss as a function of training FLOPs:
+     $$L(C) = \left(\frac{C_c}{C}\right)^{\alpha} + L_\infty$$
+   - Extract the scaling exponent $\alpha$ and verify whether IsoAntiSAM shifts the Pareto frontier outward.
+3. **Rigorous Component Ablations**:
+   - Conduct controlled ablation experiments on 1x MI300X:
+     - **Ablation 1**: IsoAntiSAM with Bilateral Gating turned OFF ($\text{gate} = 1$, raw micro-batch erosion). Measure needle attraction and overfitting.
+     - **Ablation 2**: IsoAntiSAM with Isochoric Gauge turned OFF (unprojected Anti-SAM). Measure Hessian eigenvalue $\lambda_{\max}$ explosion.
+     - **Ablation 3**: Static $\rho$ vs Cosine Perturbation Schedule.
+4. **Final Research Paper & Reproducibility Ledger**:
+   - Update `paper/paper.tex` with all final empirical figures, tables, downstream zero-shot scores, and Lean 4 formal proof citations.
+   - Compile PDF via `pdflatex` / `latexmk` and verify zero compilation warnings.
+   - Compile comprehensive artifact manifest linking every claim to its exact seed, log file, and checkpoint hash.
 
-## 3. Execution Commands
-```bash
-torchrun --nproc_per_node=8 /root/iso-anti-sam/benchmarks/train_transformer.py \
-  --model_size 350M \
-  --tokens 3000000000 \
-  --optimizer iso_anti_sam \
-  --rho 0.05 \
-  --lr 3e-4 \
-  --batch_size 16 \
-  --grad_accum 16 \
-  --bf16 \
-  --data_path /root/iso-anti-sam/data/fineweb_3B \
-  --output_dir /root/iso-anti-sam/checkpoints/350M_iso_anti_sam
-```
-
-## 4. Expected Outputs & Success Criteria
-1. Throughput $> 180,000$ tokens/second sustained across 8x MI300X.
-2. Complete 3B token run without GPU memory fragmentation or hardware drops.
-3. IsoAntiSAM demonstrates superior token efficiency: achieves the target validation loss of AdamW using 20–25% fewer tokens.
-4. Validation loss tracks training loss descent with zero sharp-needle overfitting.
-
-## 5. Self-Correcting Autonomous Fallback Loop
-If scaling breakdown or multi-GPU synchronization stall occurs:
-1. **Activate `experimental-research` skill** (`/root/skills_repo/experimental-research/SKILL.md`) and consult `references/study-design.md`.
-2. Inspect gradient all-reduce synchronization across ROCm RCCL streams: ensure micro-batch gradients $g_1, g_2$ are all-reduced independently or fused into a single interleaved tensor to halve communication overhead.
-3. Check gradient clipping and BF16 numerical dynamic range.
-4. If loss spike occurs, apply autonomous rollback to preceding checkpoint, adjust $\rho$, and resume.
+## 3. Gate Criteria
+Phase 9 passes only if:
+- Downstream zero-shot evaluation is complete across all standard tasks without missing evaluations.
+- IsoAntiSAM demonstrates statistically significant improvements in downstream accuracy and token efficiency over AdamW.
+- All ablations confirm that both the isochoric gauge and bilateral gating are necessary components of the optimizer.
+- `paper/paper.pdf` builds cleanly without LaTeX errors or missing citations.
+- Complete reproducibility ledger and final Phase 9 artifacts (`report.md`, `manifest.json`, `commands.log`, `phases/status/phase9.json`) are committed.

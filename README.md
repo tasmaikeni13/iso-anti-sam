@@ -30,7 +30,7 @@ $$\min_{w \in \mathbb{R}^d} \left( \min_{\|\epsilon\| \le \rho} L(w + \epsilon) 
 
 ## 📐 Core Theorems (Formally Machine-Verified in Lean 4)
 
-All 9 foundational theorems have been machine-verified in **Lean 4 (v4.33.1)** without unproven axioms or `sorry` gaps (audit report: [`phases/phase1_audit.md`](phases/phase1_audit.md)):
+All 9 foundational theorems have been machine-verified in **Lean 4 (v4.33.1)** without unproven axioms or `sorry` gaps (report: [`artifacts/phase1/report.md`](artifacts/phase1/report.md), status: [`phases/status/phase1.json`](phases/status/phase1.json)):
 
 | Module | Theorem Name | Mathematical Statement | Status |
 |---|---|---|---|
@@ -56,7 +56,7 @@ lake build
 
 ## 🔬 Empirical Landscape Validation (Phase 2)
 
-Numerical simulations on high-dimensional ill-conditioned landscapes with spurious sharp needles confirm the theoretical predictions (audit report: [`phases/phase2_audit.md`](phases/phase2_audit.md)):
+Numerical simulations on high-dimensional ill-conditioned landscapes with spurious sharp needles confirm the theoretical predictions (report: [`artifacts/phase2/report.md`](artifacts/phase2/report.md), status: [`phases/status/phase2.json`](phases/status/phase2.json)):
 - **Standard Anti-SAM**: Trapped in sharp needle ($d = 0.0641 < r_0$); validation loss stays elevated at $2.4890$.
 - **IsoAntiSAM**: Completely rejects sharp needles ($d = 0.7578 \gg r_0$); validation loss drops to $0.0532$ (ratio $0.0214 \le 0.80$).
 - **Divergence Scaling**: Proves $\operatorname{div}(E_{\text{anti}}) \propto -d$, whereas $\operatorname{div}(E_{\text{iso}}) = 0$.
@@ -72,7 +72,7 @@ Generated plots in `analysis/figures/`:
 
 ## ⚡ AMD Instinct MI300X Native HIP Kernel (Phase 4)
 
-We provide a fused HIP C++ kernel optimized for AMD MI300X accelerators (`gfx942`), performing wavefront-level reductions (64-wide lanes) to compute cross-batch inner products, coherence gates, and in-place tensor perturbations in under 1.2 ms for 1M parameters (audit report: [`phases/phase4_audit.md`](phases/phase4_audit.md)):
+We provide a fused HIP C++ kernel optimized for AMD MI300X accelerators (`gfx942`), performing wavefront-level reductions (64-wide lanes) to compute cross-batch inner products, coherence gates, and in-place tensor perturbations in under 1.2 ms for 1M parameters (report: [`artifacts/phase4/report.md`](artifacts/phase4/report.md), status: [`phases/status/phase4.json`](phases/status/phase4.json)):
 
 ```bash
 cd kernels
@@ -89,7 +89,7 @@ cd kernels
 
 ## 📊 WikiText-103 FlashAttention & Comparative Benchmarks (Phases 5 & 6)
 
-We evaluate autoregressive language modeling on WikiText-103 using a 6-layer causal Transformer (~14.59M parameters, dim=384, heads=6, seq_len=256) on 1x AMD Instinct MI300X (205 GB VRAM, `gfx942`). The architecture integrates **FlashAttention** via PyTorch's native SDPA mapped to ROCm CK/AOTriton kernels, coupled with online **Hessian Spectral Sharpness ($\lambda_{\max}$)** tracking via power iteration (audit reports: [`phases/phase5_audit.md`](phases/phase5_audit.md), [`phases/phase6_audit.md`](phases/phase6_audit.md)):
+We evaluate autoregressive language modeling on WikiText-103 using a 6-layer causal Transformer (~14.59M parameters, dim=384, heads=6, seq_len=256) on 1x AMD Instinct MI300X (205 GB VRAM, `gfx942`). The architecture integrates **FlashAttention** via PyTorch's native SDPA mapped to ROCm CK/AOTriton kernels, coupled with online **Hessian Spectral Sharpness ($\lambda_{\max}$)** tracking via power iteration (reports: [`artifacts/phase5/report.md`](artifacts/phase5/report.md), [`artifacts/phase6/report.md`](artifacts/phase6/report.md)):
 
 ### 10-Epoch Comparative Results (1x AMD MI300X)
 
@@ -182,7 +182,16 @@ iso-anti-sam/
 │   └── theoretical_derivation.md
 ├── benchmarks/              # WikiText-103 and language modeling benchmarks
 │   ├── train_wikitext.py    # 6-layer causal Transformer training harness
-│   └── plot_benchmark.py    # Perplexity & loss visualization
+├── artifacts/               # Standardized phase reports, manifests, and command logs
+│   ├── phase1/              # Lean 4 formal verification report & evidence
+│   ├── phase2/              # Numerical simulation & divergence scaling report
+│   ├── phase3/              # Optimizer architecture & unit test audit
+│   ├── phase4/              # AMD ROCm/HIP fused kernel MI300X audit
+│   ├── phase5/              # WikiText-103 baseline screening report
+│   └── phase6/              # FlashAttention & 10-epoch comparative report
+├── benchmarks/              # WikiText-103 and language modeling benchmarks
+│   ├── train_wikitext.py    # 6-layer causal Transformer training harness
+│   └── plot_benchmark.py    # Perplexity, loss & Hessian sharpness visualizer
 ├── kernels/                 # Native HIP C++ GPU kernels for AMD MI300X (gfx942)
 │   ├── coherent_erosion_kernel.hip
 │   ├── test_kernel.cpp
@@ -198,14 +207,10 @@ iso-anti-sam/
 │   ├── paper.tex            # LaTeX source (5 pages, publication ready)
 │   ├── paper.pdf            # Compiled PDF
 │   └── PAPER.md             # Markdown version for GitHub viewing
-├── phases/                  # 10 self-correcting autonomous agentic research phase prompts & audits
-│   ├── phase1.md / phase1_audit.md  # Math & Lean 4 verification (COMPLETED & AUDITED)
-│   ├── phase2.md / phase2_audit.md  # Landscape geometry & divergence (COMPLETED & AUDITED)
-│   ├── phase3.md / phase3_audit.md  # Optimizer architecture & unit tests (COMPLETED & AUDITED)
-│   ├── phase4.md / phase4_audit.md  # AMD MI300X HIP C++ kernels (COMPLETED & AUDITED)
-│   ├── phase5.md / phase5_audit.md  # WikiText-103 baseline benchmark (COMPLETED & AUDITED)
-│   ├── ...
-│   └── phase10.md           # Downstream benchmarks & ablations
+├── phases/                  # Autonomous research protocol, state machine & phase prompts
+│   ├── README.md            # Research operating rules, failure taxonomy & state machine
+│   ├── phase1.md – phase9.md# Copy-ready prompts for autonomous agent sessions
+│   └── status/              # Machine-readable phase status ledgers (JSON)
 ├── src/                     # PyTorch package
 │   └── iso_anti_sam/        # AntiSAM, IsoAntiSAM implementations
 ├── tests/                   # Comprehensive unit test suite
@@ -216,19 +221,18 @@ iso-anti-sam/
 
 ---
 
-## 🧭 Autonomous Research Phases (Phases 1–10)
+## 🧭 Autonomous Research Protocol (Phases 1–9)
 
-This repository is governed by 10 self-correcting, autonomous agentic phases located in [`phases/`](phases/):
-- **Phase 1**: Mathematical Formalization, Morphological Erosion Analysis, and Lean 4 Machine Verification. (**COMPLETED & AUDITED**)
-- **Phase 2**: Numerical Verification, Landscape Geometry, and Transverse Curvature Diagnostics. (**COMPLETED & AUDITED**)
-- **Phase 3**: PyTorch Optimizer Architecture, Unit Testing, and Algorithmic Controls. (**COMPLETED & AUDITED**)
-- **Phase 4**: Native HIP C++ Kernel Development and GPU Profiling on AMD Instinct MI300X. (**COMPLETED & AUDITED**)
-- **Phase 5**: Small NLP Benchmark: WikiText-103 Baseline Setup on 1x AMD MI300X. (**COMPLETED & AUDITED**)
-- **Phase 6**: FlashAttention & Comparative Evaluation on WikiText-103 (1x MI300X). (**COMPLETED & AUDITED**)
-- **Phase 7**: FineWeb-Edu Data Pipeline, Fast Tokenization, and Distributed Infrastructure Setup.
-- **Phase 8**: 125M Parameter Model Pretraining on 1B Tokens FineWeb-Edu (1x/8x AMD MI300X).
-- **Phase 9**: 350M Parameter Model Pretraining on 3B Tokens FineWeb-Edu on 8x AMD MI300X.
-- **Phase 10**: Downstream Evaluations, Ablation Diagnostics, and Comprehensive Research Finalization.
+This repository is governed by an autonomous research state machine documented in [`phases/README.md`](phases/README.md) with machine-readable status tracking in [`phases/status/`](phases/status/):
+- **Phase 1**: Adversarial Novelty, Morphological Erosion Theory & Lean 4 Formal Audit. ([Report](artifacts/phase1/report.md) | [Status: PASS](phases/status/phase1.json))
+- **Phase 2**: Landscape Geometry, Caustic Collapse Dynamics & Transverse Divergence Diagnostics. ([Report](artifacts/phase2/report.md) | [Status: PASS](phases/status/phase2.json))
+- **Phase 3**: PyTorch Optimizer Architecture, Unit Testing & Algorithmic Invariants. ([Report](artifacts/phase3/report.md) | [Status: PASS](phases/status/phase3.json))
+- **Phase 4**: Native AMD ROCm/HIP C++ Coherent Erosion Kernel & MI300X Profiling. ([Report](artifacts/phase4/report.md) | [Status: PASS](phases/status/phase4.json))
+- **Phase 5**: Small-Scale Falsification, Multi-Workload Screening & WikiText-103 Baselines. ([Report](artifacts/phase5/report.md) | [Status: PASS](phases/status/phase5.json))
+- **Phase 6**: Scaling Pilot, 8x MI300X Distributed Orchestration (RCCL DDP) & Dual Preregistration. ([Report](artifacts/phase6/report.md) | [Status: REVISE](phases/status/phase6.json))
+- **Phase 7**: Frozen 125M-Parameter, 1B-Token Confirmatory Pretraining on FineWeb-Edu (8x MI300X).
+- **Phase 8**: Frozen 350M-Parameter, 3B-Token Flagship Pretraining on FineWeb-Edu (8x MI300X).
+- **Phase 9**: Cross-Scale Generalization Analysis, Downstream Benchmarks & Final Paper.
 
 ---
 

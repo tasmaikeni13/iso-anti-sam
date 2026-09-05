@@ -1,65 +1,44 @@
-# Phase 3: PyTorch Optimizer Architecture, Unit Testing, and Algorithmic Controls
+# Phase 3: PyTorch Optimizer Architecture, Unit Testing & Algorithmic Invariants
+
+Work autonomously in the IsoAntiSAM repository and complete Phase 3. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 2. Implement the mathematical specification exactly without introducing unauthorized momentum or heuristic rescues.
 
 ## 1. Objective
-Implement the modular PyTorch optimizer package `iso_anti_sam`:
-1. `AntiSAM`: Baseline implementation of the raw formula $\min_w \min_{\|\epsilon\|\le\rho} L(w+\epsilon)$.
-2. `IsoAntiSAM`: Production-grade optimizer with automatic micro-batch splitting, bilateral coherence gating, and isochoric gauge projection.
-3. Establish comprehensive unit test coverage verifying gradient norms, parameter restoration, and device placement.
+Develop a production-grade, cleanly packaged PyTorch implementation of `IsoAntiSAM`. Establish computational graph isolation, detached gradient computation, in-place weight restoration, state-free parameter memory, and an exhaustive unit test suite.
 
-## 2. Execution Commands
-```bash
-pip install -e /root/iso-anti-sam --break-system-packages
-python3 -c "
-import torch
-import torch.nn as nn
-from iso_anti_sam import AntiSAM, IsoAntiSAM
+## 2. Required Work
+1. **PyTorch Optimizer Architecture**:
+   - Implement `IsoAntiSAM` in `src/iso_anti_sam/iso_anti_sam.py` as a subclass of `torch.optim.Optimizer`.
+   - Wrap an underlying base optimizer (e.g. `torch.optim.AdamW` or `torch.optim.SGD`).
+   - Implement the two-phase bilateral stepping protocol:
+     1. `compute_bilateral_perturbation(grads_b1, grads_b2)`:
+        - Compute cross-batch inner product $\langle g_1, g_2 \rangle$ and norms $\|g_1\|, \|g_2\|$ across all parameter tensors in FP32.
+        - Evaluate the coherence cosine similarity $\cos(g_1, g_2) = \frac{\langle g_1, g_2 \rangle}{\|g_1\| \|g_2\| + \epsilon}$.
+        - Apply coherence gate: $\operatorname{gate} = \max(\text{coherence\_floor}, \cos(g_1, g_2))$.
+        - Compute average gradient $g_{\text{avg}} = \frac{1}{2}(g_1 + g_2)$ and apply in-place perturbation:
+          $$w_{\text{pert}} = w - \rho \cdot \operatorname{gate} \cdot \frac{g_{\text{avg}}}{\|g_{\text{avg}}\|}$$
+        - Save original weights $w$ in optimizer state.
+     2. `step_with_bilateral(zero_grad=True)`:
+        - Restore original weights $w$ in-place prior to the base optimizer update.
+        - Execute base optimizer step using gradients evaluated at the perturbed position $w_{\text{pert}}$.
+        - Zero gradients cleanly.
+2. **Algorithmic Invariants & Graph Safety**:
+   - Verify zero-grad hygiene: micro-batch backward passes must not retain computational graph history or leak across iterations.
+   - Verify that parameter tensors are restored bitwise before the base optimizer step.
+   - Ensure that the optimizer persists zero temporal state beyond the standard base optimizer moments.
+3. **Comprehensive Unit Testing Suite**:
+   - Implement `tests/test_optimizer.py` covering:
+     - `test_zero_grad_isolation`: Gradients are properly detached; no autograd graph memory leak.
+     - `test_inplace_perturbation_recovery`: Original parameter weights are bitwise restored after `step_with_bilateral`.
+     - `test_orthogonal_gradient_quenching`: When $g_1 \perp g_2$ ($\langle g_1, g_2 \rangle \le 0$), the gate collapses to 0, resulting in zero perturbation ($\epsilon = 0$).
+     - `test_aligned_gradient_preservation`: When $g_1 = g_2$, $\operatorname{gate} = 1$, delivering the full morphological erosion step.
+     - `test_multi_param_group_handling`: Correct handling of disparate tensor shapes, biases, and normalization weights.
+4. **Packaging & Installation**:
+   - Configure `setup.py` and verify editable installation via `pip install -e .`.
 
-# Unit test 1: Check AntiSAM step execution
-m1 = nn.Linear(10, 2)
-opt1 = AntiSAM(m1.parameters(), lr=0.01, rho=0.05)
-l1 = m1(torch.randn(8, 10)).sum()
-l1.backward()
-opt1.first_step(zero_grad=True)
-l1_pert = m1(torch.randn(8, 10)).sum()
-l1_pert.backward()
-opt1.second_step(zero_grad=True)
-print('AntiSAM unit test passed.')
-
-# Unit test 2: Check IsoAntiSAM step execution
-m2 = nn.Linear(10, 2)
-opt2 = IsoAntiSAM(m2.parameters(), lr=0.01, rho=0.05)
-x = torch.randn(16, 10)
-y = torch.randint(0, 2, (16,))
-crit = nn.CrossEntropyLoss()
-
-# Micro-batch 1
-l_b1 = crit(m2(x[:8]), y[:8])
-l_b1.backward()
-g1 = [p.grad.clone() for p in m2.parameters()]
-m2.zero_grad()
-
-# Micro-batch 2
-l_b2 = crit(m2(x[8:]), y[8:])
-l_b2.backward()
-g2 = [p.grad.clone() for p in m2.parameters()]
-m2.zero_grad()
-
-cos_sim = opt2.compute_bilateral_perturbation(g1, g2)
-l_outer = crit(m2(x), y)
-l_outer.backward()
-opt2.step_with_bilateral(zero_grad=True)
-print(f'IsoAntiSAM unit test passed. Cross-batch cosine similarity: {cos_sim:.4f}')
-"
-```
-
-## 3. Expected Outputs & Success Criteria
-1. Unit tests pass with code 0.
-2. In-place weight updates verified without memory leaks.
-3. Coherence similarity returns valid scalar in $[-1.0, 1.0]$.
-
-## 4. Self-Correcting Autonomous Fallback Loop
-If unit tests fail:
-1. **Activate `ml-research` skill** (`/root/skills_repo/ml-research/SKILL.md`) and consult `references/experiment-protocol.md`.
-2. Inspect parameter graph detachment (`torch.no_grad()`). Ensure `old_p` storage correctly caches tensor references across parameter groups.
-3. Validate gradient zeroing between micro-batch forward/backward passes.
-4. Re-run tests until 100% green.
+## 3. Gate Criteria
+Phase 3 passes only if:
+- `pip install -e .` succeeds with clean package metadata.
+- 100% of unit tests in `tests/test_optimizer.py` pass without warning or error.
+- Verified zero memory leaks in repeated forward-backward stepping.
+- State-space footprint contains no persistent optimizer state beyond base optimizer requirements.
+- Standard Phase 3 artifacts (`report.md`, `manifest.json`, `commands.log`, `phases/status/phase3.json`) are written.
