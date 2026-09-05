@@ -223,7 +223,11 @@ def parse_args():
     parser.add_argument('--rho', type=float, default=0.05)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--seq_len', type=int, default=256)
+    parser.add_argument('--dim', type=int, default=384)
+    parser.add_argument('--n_layers', type=int, default=6)
+    parser.add_argument('--n_heads', type=int, default=6)
     parser.add_argument('--device', type=str, default='cuda:0' if torch.cuda.is_available() else 'cpu')
+    parser.add_argument('--exp_name', type=str, default=None)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--log_dir', type=str, default='/root/iso-anti-sam/logs/wikitext')
     return parser.parse_args()
@@ -256,7 +260,7 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, drop_last=True)
 
-    model = CausalTransformer(vocab_size=10000, dim=384, n_heads=6, n_layers=6, seq_len=args.seq_len).to(device)
+    model = CausalTransformer(vocab_size=10000, dim=args.dim, n_heads=args.n_heads, n_layers=args.n_layers, seq_len=args.seq_len).to(device)
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Model parameters: {num_params:,} ({num_params/1e6:.2f}M) with FlashAttention SDPA")
 
@@ -396,11 +400,12 @@ def main():
 
         print(f"Epoch {epoch:2d}/{args.epochs:2d} | Train: {avg_train_loss:.4f} | Val: {avg_val_loss:.4f} | Gap: {gen_gap:.4f} | PPL: {val_ppl:6.2f} | λ_max: {lambda_max:6.2f} | Time: {epoch_dur:.2f}s")
 
-    log_file = os.path.join(args.log_dir, f"{args.optimizer}_history.json")
+    exp_prefix = args.exp_name if args.exp_name else args.optimizer
+    log_file = os.path.join(args.log_dir, f"{exp_prefix}_history.json")
     with open(log_file, 'w') as f:
         json.dump(history, f, indent=2)
 
-    ckpt_file = os.path.join(args.log_dir, f"{args.optimizer}_checkpoint.pt")
+    ckpt_file = os.path.join(args.log_dir, f"{exp_prefix}_checkpoint.pt")
     torch.save({
         'epoch': args.epochs,
         'model_state_dict': model.state_dict(),
@@ -409,7 +414,7 @@ def main():
         'config': vars(args)
     }, ckpt_file)
 
-    print(f"\n--- Benchmark Complete: {args.optimizer.upper()} ---")
+    print(f"\n--- Benchmark Complete: {args.optimizer.upper()} ({exp_prefix}) ---")
     print(f"Final Val Loss: {history['val_loss'][-1]:.4f} | Final Val PPL: {history['val_ppl'][-1]:.2f} | Gap: {history['generalization_gap'][-1]:.4f} | λ_max: {history['lambda_max'][-1]:.2f}")
     print(f"Logs saved to: {log_file}")
 
