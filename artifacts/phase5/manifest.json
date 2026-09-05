@@ -1,0 +1,54 @@
+{
+  "phase": 5,
+  "commit_hash": "fd6216641da41383175748223e6907de094a7436",
+  "run_id": "phase5-20260905T153500Z",
+  "gate": "PASS",
+  "hardware_environment": {
+    "platform": "Linux x86_64",
+    "gpu": "1x AMD Instinct MI300X VF (gfx942, 205GB HBM3)",
+    "python_version": "3.12.3",
+    "torch_version": "2.10.0.dev20250926+rocm6.3"
+  },
+  "dataset": {
+    "name": "WikiText-103-raw",
+    "public_url": "https://huggingface.co/datasets/mattdangerw/wikitext-103-raw/resolve/main/wikitext-103-raw-v1.zip?download=true",
+    "train_tokens": 136801355,
+    "val_tokens": 255414,
+    "vocab_size": 10000
+  },
+  "cli_commands": [
+    "python3 benchmarks/prepare_wikitext.py",
+    "./benchmarks/run_all_baselines.sh"
+  ],
+  "random_seeds": [
+    42
+  ],
+  "input_paths": [
+    "benchmarks/prepare_wikitext.py",
+    "benchmarks/train_wikitext.py",
+    "benchmarks/plot_benchmark.py",
+    "benchmarks/run_all_baselines.sh"
+  ],
+  "output_paths": [
+    "logs/wikitext/adamw_history.json",
+    "logs/wikitext/sgd_history.json",
+    "logs/wikitext/sam_history.json",
+    "logs/wikitext/anti_sam_history.json",
+    "logs/wikitext/iso_anti_sam_history.json",
+    "logs/wikitext/benchmark_comparison.png",
+    "analysis/figures/wikitext_benchmark_comparison.png"
+  ],
+  "sha256_checksums": {
+    "benchmarks/prepare_wikitext.py": "9f27e7479cc15fdd59489d8ed1f6dcf134bae519be0eb18ccf578646d958fbf6",
+    "benchmarks/train_wikitext.py": "05769f77f6c4dffdc923088b3642e73aa6b12fdc13bb253f906d869663f8dc59",
+    "benchmarks/plot_benchmark.py": "dc58e36479b48e84767574e20b3bc76daf8583cf354208ef083803c682dc5381",
+    "benchmarks/run_all_baselines.sh": "ab51138a8b441c313da49cc39ec3ccacdca3634db0d91eb85b614c72f451198f",
+    "logs/wikitext/adamw_history.json": "eb845f101d7f90bd04a4ff9cfcc4637362090c9044e7c2c57b809e2928ce4303",
+    "logs/wikitext/sgd_history.json": "0814f1a8b27883fd38c97b63afda693a91b63f80a12788e19aba12a1a7530bf9",
+    "logs/wikitext/sam_history.json": "9c48298e27aaf1ca9d20466069e3ac2317f0f7d07264a7d20e5894bd4bdd19f3",
+    "logs/wikitext/anti_sam_history.json": "6bff3a28583d203b90091e1d18d73e0debe97e390053ec540426803d9a9a4cb7",
+    "logs/wikitext/iso_anti_sam_history.json": "0745969c02db111d505824215e10e4484bbff3d7c0e9808752c3ebea13e046d0",
+    "logs/wikitext/benchmark_comparison.png": "e7b12a0ccc9c3a14e131256491a63126a45de1fc84b844da6c61c895e0273cd8",
+    "analysis/figures/wikitext_benchmark_comparison.png": "e7b12a0ccc9c3a14e131256491a63126a45de1fc84b844da6c61c895e0273cd8"
+  }
+}

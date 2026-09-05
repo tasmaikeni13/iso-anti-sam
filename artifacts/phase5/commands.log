@@ -1,0 +1,2 @@
+python3 benchmarks/prepare_wikitext.py
+./benchmarks/run_all_baselines.sh
