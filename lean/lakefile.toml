@@ -1,0 +1,10 @@
+name = "iso_anti_sam"
+version = "0.1.0"
+defaultTargets = ["iso_anti_sam"]
+
+[[lean_lib]]
+name = "IsoAntiSam"
+
+[[lean_exe]]
+name = "iso_anti_sam"
+root = "Main"
