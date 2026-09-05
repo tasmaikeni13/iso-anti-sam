@@ -27,6 +27,11 @@ Execute downstream zero-shot evaluation of pretrained checkpoints, extract empir
    - Update `paper/paper.tex` with all final empirical figures, tables, downstream zero-shot scores, and Lean 4 formal proof citations.
    - Compile PDF via `pdflatex` / `latexmk` and verify zero compilation warnings.
    - Compile comprehensive artifact manifest linking every claim to its exact seed, log file, and checkpoint hash.
+5. **Specialized Skill Consultation**:
+   - For research record compilation, scaling law fits, and downstream ablation analysis: activate and consult `skills/experimental-research` (`references/research-record.md`, `references/study-design.md`).
+   - For mathematical formalization citations and theoretical consistency: activate and consult `skills/theory-research` (`references/proof-audit.md`).
+   - For related work scoping and publication-grade literature synthesis: activate and consult `skills/literature-frontier` (`references/frontier-artifacts.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 9 passes only if:

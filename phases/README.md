@@ -66,6 +66,22 @@ The core thesis of IsoAntiSAM is that **morphological erosion accelerated descen
 
 ---
 
-## 4. Execution Guidance
+## 4. Specialized Research Skills
+
+The repository equips autonomous research agents with specialized domain skills located under `skills/`:
+- **`skills/theory-research`**: Mathematical proof auditing, adversarial edge-case stress testing, and theorem formulation (`SKILL.md`, `references/proof-audit.md`, `references/attack-protocol.md`).
+- **`skills/literature-frontier`**: Systematic prior-art collision search, literature matrix construction, and novelty claim scoping (`SKILL.md`, `references/search-protocol.md`, `references/frontier-artifacts.md`).
+- **`skills/ml-research`**: Neural training loop architectures, hyperparameter tuning protocols, and optimizer convergence diagnostics (`SKILL.md`, `references/research-loop.md`, `references/method-search.md`).
+- **`skills/experimental-research`**: Empirical study design, numerical simulation measurement, and high-dimensional diagnostic sweeps (`SKILL.md`, `references/study-design.md`, `references/simulation-and-measurement.md`).
+- **`skills/mechanism-transfer`**: Cross-domain mathematical mapping and physical analog transfer (`SKILL.md`, `references/mechanism-families.md`, `references/search-and-mapping.md`).
+
+### Skill Usage Protocol
+Autonomous agents must activate and consult these skills internally when executing relevant phase tasks or diagnosing failures. 
+**CRITICAL PROTOCOL RULE**: The agent **DOES** use and apply these skills when needed, but **DOES NOT** mention skill names, tool invocations, or assistant meta-prompts in its final reports, commit messages, or scientific outputs. All scientific deliverables must speak strictly in the language of mathematics, empirical evidence, and code artifacts.
+
+---
+
+## 5. Execution Guidance
 
 To run a phase, provide the entire phase prompt (`phases/phaseN.md`) to a fresh agent session. Ensure all preceding phase status files in `phases/status/` record `PASS`. Phases 7 and 8 are strictly isolated execution phases to allow multi-hour GPU training without design drift.
+

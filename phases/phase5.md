@@ -24,6 +24,10 @@ Establish an empirical screening pipeline on real NLP benchmarks using a 6-layer
    - Measure validation cross-entropy loss, perplexity (PPL), and epoch training duration.
    - Track the generalization divergence gap: $\Delta(t) = |L_{\text{val}}(t) - L_{\text{train}}(t)|$.
    - Verify that IsoAntiSAM avoids the rapid validation divergence characteristic of Raw Anti-SAM.
+5. **Specialized Skill Consultation**:
+   - For language model benchmark design and equal-budget baseline protocols: activate and consult `skills/ml-research` (`references/research-loop.md`, `references/method-search.md`).
+   - For empirical data pipelining, token shard integrity, and memory accounting: activate and consult `skills/experimental-research` (`references/study-design.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 5 passes only if:

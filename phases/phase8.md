@@ -22,6 +22,10 @@ Scale IsoAntiSAM to an approximately **350M-parameter** causal Transformer train
 4. **Telemetry & Resumption**:
    - Log high-resolution metrics every 10M tokens (`metrics.jsonl`).
    - Save distributed atomic checkpoints every 500M tokens. Maintain automatic deterministic resumption.
+5. **Specialized Skill Consultation**:
+   - For empirical scaling law analysis, token efficiency evaluation, and learning dynamics: activate and consult `skills/ml-research` (`references/research-loop.md`).
+   - For full-node cluster measurement, HBM3 memory optimization, and throughput telemetry: activate and consult `skills/experimental-research` (`references/simulation-and-measurement.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 8 passes only if:

@@ -33,6 +33,11 @@ Establish multi-GPU distributed scaling across the **8x AMD Instinct MI300X** cl
 5. **Preregistration & Checksums**:
    - Compute SHA256 checksums of both protocol files.
    - Verify local disk space margin for FineWeb-Edu token shards and atomic checkpoints.
+6. **Specialized Skill Consultation**:
+   - For perturbation schedule design, fallback loops, and learning rate/radius co-adaptation: activate and consult `skills/ml-research` (`references/research-loop.md`, `references/method-search.md`).
+   - For multi-GPU DDP scaling, MFU measurement, and throughput profiling: activate and consult `skills/experimental-research` (`references/simulation-and-measurement.md`).
+   - For geometric parameterization and cross-family optimization transfer: activate and consult `skills/mechanism-transfer` (`references/mechanism-families.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 6 passes only if:

@@ -28,6 +28,10 @@ Subject the core theoretical claims of IsoAntiSAM to hostile mathematical scruti
    - Ensure `lake build` completes cleanly with return code 0, zero `sorry` placeholders, and zero unproven axioms.
 5. **Documentation & Research Paper**:
    - Update `paper/paper.tex` and `paper/PAPER.md` with the verified theorems, explicit proof steps, and adversarial boundary analyses.
+6. **Specialized Skill Consultation**:
+   - For mathematical proof auditing and adversarial stress-testing, activate and consult `skills/theory-research` (`references/proof-audit.md`, `references/attack-protocol.md`).
+   - For systematic literature searches and novelty matrices, activate and consult `skills/literature-frontier` (`references/search-protocol.md`, `references/frontier-artifacts.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 1 passes only if:

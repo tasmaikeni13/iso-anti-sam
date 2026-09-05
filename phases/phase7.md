@@ -25,6 +25,10 @@ Execute the preregistered confirmatory pretraining of an approximately **125M-pa
 5. **Post-Run Verification**:
    - Confirm that each completed run processed exactly 1,000,000,000 non-padding tokens.
    - Verify that validation tokens remained strictly isolated from training.
+6. **Specialized Skill Consultation**:
+   - For long-run cluster telemetry, fault-tolerant checkpointing, and execution monitoring: activate and consult `skills/experimental-research` (`references/simulation-and-measurement.md`, `references/research-record.md`).
+   - For protocol adherence, random seed control, and learning curve tracking: activate and consult `skills/ml-research` (`references/experiment-protocol.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 7 passes only if:

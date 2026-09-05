@@ -24,6 +24,10 @@ Develop a high-performance native AMD ROCm/HIP C++ fused kernel targeting the **
    - Benchmark kernel execution latency across parameter sizes $N \in [10^5, 10^7]$.
    - Ensure the fused kernel executes in $< 3.0$ ms for $N = 1,000,000$ parameters on MI300X.
    - Compare memory bandwidth against theoretical HBM3 peak.
+5. **Specialized Skill Consultation**:
+   - For GPU execution profiling, latency benchmarking, and hardware measurement: activate and consult `skills/experimental-research` (`references/simulation-and-measurement.md`).
+   - For multi-precision reduction tolerances and ROCm compiler diagnostics: activate and consult `skills/ml-research` (`references/experiment-protocol.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 4 passes only if:

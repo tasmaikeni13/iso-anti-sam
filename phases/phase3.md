@@ -34,6 +34,10 @@ Develop a production-grade, cleanly packaged PyTorch implementation of `IsoAntiS
      - `test_multi_param_group_handling`: Correct handling of disparate tensor shapes, biases, and normalization weights.
 4. **Packaging & Installation**:
    - Configure `setup.py` and verify editable installation via `pip install -e .`.
+5. **Specialized Skill Consultation**:
+   - For optimizer invariant enforcement, gradient detachment, and state-free protocol validation: activate and consult `skills/ml-research` (`references/experiment-protocol.md`, `references/method-search.md`).
+   - For adversarial tensor shape and edge-case unit test coverage: activate and consult `skills/theory-research` (`references/attack-protocol.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 3 passes only if:

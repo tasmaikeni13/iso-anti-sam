@@ -211,6 +211,12 @@ iso-anti-sam/
 │   ├── README.md            # Research operating rules, failure taxonomy & state machine
 │   ├── phase1.md – phase9.md# Copy-ready prompts for autonomous agent sessions
 │   └── status/              # Machine-readable phase status ledgers (JSON)
+├── skills/                  # Domain research skills (theory, literature, ml-research, etc.)
+│   ├── experimental-research/
+│   ├── literature-frontier/
+│   ├── mechanism-transfer/
+│   ├── ml-research/
+│   └── theory-research/
 ├── src/                     # PyTorch package
 │   └── iso_anti_sam/        # AntiSAM, IsoAntiSAM implementations
 ├── tests/                   # Comprehensive unit test suite

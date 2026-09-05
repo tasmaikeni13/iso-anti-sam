@@ -27,6 +27,10 @@ Empirically falsify or substantiate the theoretical predictions from Phase 1 reg
      - `simulation_landscape.png`: Trajectory convergence curves and distance to needle center.
      - `divergence_scaling.png`: Negative divergence scaling of Anti-SAM vs zero divergence of IsoAntiSAM.
    - Maintain fully deterministic seeds (`seed=42`).
+5. **Specialized Skill Consultation**:
+   - For high-dimensional simulation design and divergence measurement: activate and consult `skills/experimental-research` (`references/simulation-and-measurement.md`, `references/study-design.md`).
+   - For caustic curvature and transverse manifold dynamics: activate and consult `skills/theory-research` (`references/proof-audit.md`).
+   - *Protocol Rule*: Use and apply these skills internally whenever needed, but do NOT cite skill names, meta-instructions, or tool invocations in final reports or scientific outputs.
 
 ## 3. Gate Criteria
 Phase 2 passes only if:
