@@ -1,15 +1,15 @@
 {
   "phase": 3,
   "gate": "PASS",
-  "handoff_commit": "3df90fac39ac1f0bb65dba43f862ac2af02c2595",
-  "run_id": "phase3-20260905T143200Z",
+  "handoff_commit": "1493111b083cc4d80c90fb0c28ff31305d1841a5",
+  "run_id": "phase3-20260905T151600Z",
   "timestamp_utc": "2026-09-05T14:32:00Z",
   "invalidated_downstream_phases": [],
   "reasons": [
     "Package iso_anti_sam successfully installed in editable mode via pip install -e . with clean metadata.",
-    "Comprehensive unit test suite in tests/test_optimizer.py passes 5 out of 5 tests (100% pass rate).",
+    "Comprehensive unit test suite in tests/test_optimizer.py passes 9 out of 9 tests (100% pass rate).",
     "Verified zero-grad detachment, ensuring that gradient computations for bilateral micro-batches B1 and B2 do not leak into computational graphs.",
-    "Verified in-place perturbation recovery, confirming that original parameter weights are faithfully restored prior to applying the outer update.",
-    "Verified bilateral coherence gating behavior across synthetic orthogonal (gate = 0) and aligned (gate = 1) gradient pairs."
+    "Verified in-place bitwise perturbation recovery, confirming original parameter weights are faithfully restored and old parameter clones deleted from state prior to outer update.",
+    "Verified bilateral coherence gating behavior across synthetic orthogonal (gate = 0), aligned (gate = 1), and disparate multi-parameter group configurations."
   ]
 }

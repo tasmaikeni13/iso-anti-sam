@@ -1,0 +1,41 @@
+{
+  "phase": 1,
+  "run_id": "phase1-20260905T142402Z",
+  "gate": "PASS",
+  "hardware_environment": {
+    "platform": "Linux x86_64",
+    "lean_version": "Lean 4 v4.33.1 (Release 819816b2e0)"
+  },
+  "cli_commands": [
+    "export PATH=\"$HOME/.elan/bin:$PATH\"",
+    "cd /root/iso-anti-sam/lean && lake clean && lake build",
+    "/root/iso-anti-sam/lean/.lake/build/bin/iso_anti_sam"
+  ],
+  "random_seeds": [
+    42
+  ],
+  "input_paths": [
+    "lean/IsoAntiSam/*.lean",
+    "lean/Main.lean",
+    "lean/lakefile.toml"
+  ],
+  "output_paths": [
+    "lean/.lake/build/bin/iso_anti_sam",
+    "paper/paper.tex",
+    "paper/PAPER.md"
+  ],
+  "sha256_checksums": {
+    "lean/IsoAntiSam/Basic.lean": "2b65c0d767ea63cfb75b93418f62ee4ed99152f61c0670881e348f78abcb3e3a",
+    "lean/IsoAntiSam/BasinDilation.lean": "1d85fab7f490c43cf2949f7240baa8b02140c5fa0b224f160a25b8f7c8a84e38",
+    "lean/IsoAntiSam/CausticCollapse.lean": "bda9fcc16f3da21de502bcbc549178e204ab8793ff93a1652f8226f3b5043abd",
+    "lean/IsoAntiSam/CoherentDispersion.lean": "386645734ac77c8359ce8e95023ce8b816c8b66e03e575350cd367c4266e1fe5",
+    "lean/IsoAntiSam/CoherentGeneralization.lean": "9a9dcf0c6d61dec20473bba726dd6a9c0b022d4aa22de294f11e79370fd658de",
+    "lean/IsoAntiSam/ErosionVelocity.lean": "95c92292817a1b84001b5ee2230745e50c4acd06a5ca1583be5a6087c9eb6a49",
+    "lean/IsoAntiSam/HamiltonJacobiErosion.lean": "a4105ac07b64a4a8053614b34bd971ca5da81b5c0c826b3a721a1d9343d6adb2",
+    "lean/IsoAntiSam/NoiseDivergence.lean": "98925a8dbcc8d9455e9f1d4a69339dd911fe833a79d68ab2abcbab68efd36186",
+    "lean/IsoAntiSam/ProjectorProperties.lean": "544f2ca57dd6fb6237d2445ff4a7e4aad9f0929257ce8983d6e2f7d881977d8c",
+    "lean/Main.lean": "e90b415a47b30a674b3e5276fb4a7df71d25576ee39da1fd84f8a062c71c338f",
+    "paper/paper.tex": "b2756ee8010714f5155d352b1685589fea30d78967265205c41c937d3a87f874",
+    "paper/PAPER.md": "d728bd6627d56ee93316b1e80bb10a489e1224f4af2aaf1bb735b6dbe26fb11e"
+  }
+}

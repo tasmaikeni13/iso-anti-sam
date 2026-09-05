@@ -43,9 +43,9 @@ class AntiSAM(Optimizer):
         """Restores w and applies base optimizer update on grad(w + eps)."""
         for group in self.param_groups:
             for p in group["params"]:
-                if p.grad is None:
-                    continue
-                p.data = self.state[p]["old_p"]
+                if "old_p" in self.state[p]:
+                    p.data.copy_(self.state[p]["old_p"])
+                    del self.state[p]["old_p"]
         self.base_optimizer.step()
         if zero_grad:
             self.zero_grad()

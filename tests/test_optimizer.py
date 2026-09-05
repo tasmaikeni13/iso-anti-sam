@@ -24,36 +24,135 @@ class TestOptimizers(unittest.TestCase):
         loss2.backward()
         opt.second_step(zero_grad=True)
         
-        # Check parameters were updated
+        # Check parameters were updated and old_p cleaned up
         for p_orig, p in zip(orig_params, m.parameters()):
             self.assertFalse(torch.allclose(p_orig, p))
+            self.assertNotIn("old_p", opt.state[p])
 
-    def test_iso_anti_sam_coherence_gating(self):
-        m = nn.Linear(8, 2)
+    def test_zero_grad_isolation(self):
+        """Verifies zero-grad detachment and absence of computational graph memory retention."""
+        m = nn.Sequential(nn.Linear(10, 10), nn.ReLU(), nn.Linear(10, 2))
         opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=0.05)
         
-        # Case 1: Identical gradients (cos_sim = 1.0)
-        g_identical_1 = [torch.ones_like(p) for p in m.parameters()]
-        g_identical_2 = [torch.ones_like(p) for p in m.parameters()]
-        sim = opt.compute_bilateral_perturbation(g_identical_1, g_identical_2)
-        self.assertAlmostEqual(sim, 1.0, places=4)
+        x1 = torch.randn(4, 10, requires_grad=True)
+        loss1 = m(x1).sum()
+        loss1.backward()
+        g1 = [p.grad.clone().detach() for p in m.parameters()]
+        opt.zero_grad(set_to_none=True)
+
+        x2 = torch.randn(4, 10, requires_grad=True)
+        loss2 = m(x2).sum()
+        loss2.backward()
+        g2 = [p.grad.clone().detach() for p in m.parameters()]
+        opt.zero_grad(set_to_none=True)
+
+        # Gradients must have no graph attachment
+        for g in g1 + g2:
+            self.assertIsNone(g.grad_fn)
+
+        sim = opt.compute_bilateral_perturbation(g1, g2)
+        self.assertIsInstance(sim, float)
+
+        # Outer backward pass
+        x_out = torch.randn(4, 10)
+        loss_out = m(x_out).sum()
+        loss_out.backward()
+        opt.step_with_bilateral(zero_grad=True)
+
+        # Gradients must be zeroed / cleared
+        for p in m.parameters():
+            self.assertTrue(p.grad is None or torch.all(p.grad == 0))
+
+    def test_inplace_perturbation_recovery(self):
+        """Verifies bitwise restoration of original weights before outer update and clean state footprint."""
+        m = nn.Linear(8, 2, bias=False)
+        # Use lr=0.0 to test exact bitwise recovery of parameter values
+        opt = IsoAntiSAM(m.parameters(), lr=0.0, rho=0.05)
         
-        # Step with bilateral
+        orig_w = m.weight.clone()
+        g1 = [torch.ones_like(m.weight)]
+        g2 = [torch.ones_like(m.weight)]
+        
+        opt.compute_bilateral_perturbation(g1, g2)
+        # Weights should be perturbed during intermediate phase
+        self.assertFalse(torch.equal(m.weight, orig_w))
+        
+        # Outer step with lr=0.0 must restore original weights bitwise
+        m.weight.grad = torch.randn_like(m.weight)
         opt.step_with_bilateral(zero_grad=True)
         
-        # Case 2: Opposite gradients (cos_sim = -1.0) -> gate should be 0.0
-        m2 = nn.Linear(8, 2)
-        opt2 = IsoAntiSAM(m2.parameters(), lr=0.01, rho=0.05)
-        g_opp_1 = [torch.ones_like(p) for p in m2.parameters()]
-        g_opp_2 = [-torch.ones_like(p) for p in m2.parameters()]
+        self.assertTrue(torch.equal(m.weight, orig_w))
+        # Ensure state footprint contains no lingering old_p clone
+        self.assertNotIn("old_p", opt.state[m.weight])
+
+    def test_orthogonal_gradient_quenching(self):
+        """When g1 orthogonal or opposing g2 (<g1, g2> <= 0), gate collapses to 0 and perturbation is zero."""
+        m = nn.Linear(4, 2, bias=False)
+        opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=0.05, coherence_floor=0.0)
         
-        p_before = [p.clone() for p in m2.parameters()]
-        sim2 = opt2.compute_bilateral_perturbation(g_opp_1, g_opp_2)
-        self.assertLess(sim2, -0.99)
+        orig_w = m.weight.clone()
         
-        # Check that weights did NOT move because gate = 0.0
-        for pb, p in zip(p_before, m2.parameters()):
-            self.assertTrue(torch.allclose(pb, p))
+        # Perfectly orthogonal gradients: g1 nonzero on row 0, g2 nonzero on row 1
+        g1 = [torch.zeros_like(m.weight)]
+        g1[0][0, :] = 1.0
+        g2 = [torch.zeros_like(m.weight)]
+        g2[0][1, :] = 1.0
+        
+        sim = opt.compute_bilateral_perturbation(g1, g2)
+        self.assertAlmostEqual(sim, 0.0, places=5)
+        # Since gate == 0, weight perturbation must be exactly 0
+        self.assertTrue(torch.equal(m.weight, orig_w))
+        
+        # Opposing gradients: g1 = -g2 (<g1, g2> = -1)
+        g_opp1 = [torch.ones_like(m.weight)]
+        g_opp2 = [-torch.ones_like(m.weight)]
+        sim_opp = opt.compute_bilateral_perturbation(g_opp1, g_opp2)
+        self.assertAlmostEqual(sim_opp, -1.0, places=5)
+        # Gate clamped at coherence_floor = 0.0 -> weights unchanged
+        self.assertTrue(torch.equal(m.weight, orig_w))
+
+    def test_aligned_gradient_preservation(self):
+        """When g1 == g2, gate == 1, delivering full morphological erosion perturbation: -rho * g / ||g||."""
+        m = nn.Linear(4, 2, bias=False)
+        rho = 0.05
+        opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=rho)
+        
+        orig_w = m.weight.clone()
+        g = torch.randn_like(m.weight)
+        g1 = [g.clone()]
+        g2 = [g.clone()]
+        
+        sim = opt.compute_bilateral_perturbation(g1, g2)
+        self.assertAlmostEqual(sim, 1.0, places=5)
+        
+        expected_norm = torch.linalg.vector_norm(g).item() + 1e-12
+        expected_pert = orig_w - rho * (g / expected_norm)
+        self.assertTrue(torch.allclose(m.weight, expected_pert, atol=1e-6))
+
+    def test_multi_param_group_handling(self):
+        """Handles disparate parameter shapes (2D weights, 1D biases, LayerNorm scalars) and multiple groups."""
+        p1 = nn.Parameter(torch.randn(32, 16))
+        p2 = nn.Parameter(torch.randn(32))
+        p3 = nn.Parameter(torch.randn(1, 16))
+        
+        opt = IsoAntiSAM([
+            {"params": [p1, p2], "lr": 1e-3, "rho": 0.05},
+            {"params": [p3], "lr": 5e-4, "rho": 0.02, "coherence_floor": 0.0}
+        ])
+        
+        g1 = [torch.randn_like(p1), torch.randn_like(p2), torch.randn_like(p3)]
+        g2 = [torch.randn_like(p1), torch.randn_like(p2), torch.randn_like(p3)]
+        
+        sim = opt.compute_bilateral_perturbation(g1, g2)
+        self.assertTrue(-1.0 <= sim <= 1.0)
+        
+        p1.grad = torch.randn_like(p1)
+        p2.grad = torch.randn_like(p2)
+        p3.grad = torch.randn_like(p3)
+        
+        opt.step_with_bilateral(zero_grad=True)
+        for p in [p1, p2, p3]:
+            self.assertNotIn("old_p", opt.state[p])
 
     def test_device_placement_gpu(self):
         if not torch.cuda.is_available():

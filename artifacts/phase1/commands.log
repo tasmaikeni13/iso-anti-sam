@@ -1,0 +1,5 @@
+export PATH="$HOME/.elan/bin:$PATH"
+cd /root/iso-anti-sam/lean
+lake clean
+lake build
+./.lake/build/bin/iso_anti_sam

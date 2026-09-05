@@ -1,0 +1,33 @@
+{
+  "phase": 3,
+  "run_id": "phase3-20260905T151600Z",
+  "gate": "PASS",
+  "hardware_environment": {
+    "platform": "Linux x86_64",
+    "gpu": "AMD Instinct MI300X VF (gfx942, 205GB HBM3)",
+    "python_version": "3.12.3",
+    "torch_version": "2.10.0.dev20250926+rocm6.3"
+  },
+  "cli_commands": [
+    "pip install -e . --break-system-packages",
+    "python3 -m unittest discover -s tests -p 'test_*.py' -v"
+  ],
+  "random_seeds": [
+    42
+  ],
+  "input_paths": [
+    "src/iso_anti_sam/iso_anti_sam.py",
+    "src/iso_anti_sam/anti_sam.py",
+    "setup.py",
+    "tests/test_optimizer.py"
+  ],
+  "output_paths": [
+    "tests/test_optimizer.py"
+  ],
+  "sha256_checksums": {
+    "src/iso_anti_sam/__init__.py": "f2fe84f9cefeb787d22fbd328e2e71a34f4cf9534ac40940376dee7e82d241c7",
+    "src/iso_anti_sam/anti_sam.py": "cb57d7ef089244721b98c15c78250a13f0f739c87da47918c8ce55c454d3a14f",
+    "src/iso_anti_sam/iso_anti_sam.py": "b09369c7bbc1e8827607041c45123186675795604ac6b62f34cfaf15bf4c75cc",
+    "tests/test_optimizer.py": "ddfb0deb7169eaf3b0abf2c245fcb04a5e64f7f8859336b79cf3c296be59c61e"
+  }
+}

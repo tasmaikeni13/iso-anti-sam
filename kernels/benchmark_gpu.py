@@ -51,6 +51,7 @@ if __name__ == "__main__":
     # Run HIP test kernel
     res = subprocess.run(["/root/iso-anti-sam/kernels/test_kernel"], capture_output=True, text=True)
     for line in res.stdout.splitlines():
-        if "Kernel executed in:" in line:
-            print(f"Native HIP Fused Kernel on MI300X:   {line.split('in: ')[1].split(' for')[0]} / step (1M elements)")
-            break
+        if "Kernel steady-state latency:" in line or "Kernel executed in:" in line:
+            print(f"Native HIP Fused Kernel on MI300X:   {line.split(': ')[1].split(' for')[0]} / step (1M elements)")
+        if "Effective Memory Bandwidth" in line or "N =" in line:
+            print(f"  {line}")

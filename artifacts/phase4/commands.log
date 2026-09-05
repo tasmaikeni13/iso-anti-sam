@@ -1,0 +1,3 @@
+/opt/rocm/bin/hipcc -O3 --offload-arch=gfx942 kernels/coherent_erosion_kernel.hip kernels/test_kernel.cpp -o kernels/test_kernel
+./kernels/test_kernel
+python3 kernels/benchmark_gpu.py

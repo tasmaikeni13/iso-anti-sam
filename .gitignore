@@ -44,6 +44,7 @@ lake-packages/
 *.fdb_latexmk
 *.fls
 *.log
+!artifacts/**/commands.log
 *.out
 *.run.xml
 *.synctex.gz

@@ -79,23 +79,42 @@ int main() {
     HIP_CHECK(hipMemcpy(d_g1, h_g1, bytes, hipMemcpyHostToDevice));
     HIP_CHECK(hipMemcpy(d_g2, h_g2, bytes, hipMemcpyHostToDevice));
 
+    // Warmup iterations
+    for (int it = 0; it < 5; it++) {
+        launch_coherent_erosion_mi300x(d_w, d_g1, d_g2, d_scalars, rho, coherence_floor, n, 0);
+    }
+    HIP_CHECK(hipDeviceSynchronize());
+
+    // Reset d_w for exact golden verification
+    HIP_CHECK(hipMemcpy(d_w, h_w, bytes, hipMemcpyHostToDevice));
+
     hipEvent_t start, stop;
     HIP_CHECK(hipEventCreate(&start));
     HIP_CHECK(hipEventCreate(&stop));
 
+    // Timed steady-state execution
+    int num_trials = 50;
     HIP_CHECK(hipEventRecord(start, 0));
-    launch_coherent_erosion_mi300x(d_w, d_g1, d_g2, d_scalars, rho, coherence_floor, n, 0);
+    for (int it = 0; it < num_trials; it++) {
+        launch_coherent_erosion_mi300x(d_w, d_g1, d_g2, d_scalars, rho, coherence_floor, n, 0);
+    }
     HIP_CHECK(hipEventRecord(stop, 0));
     HIP_CHECK(hipEventSynchronize(stop));
 
-    float ms = 0;
-    HIP_CHECK(hipEventElapsedTime(&ms, start, stop));
+    float total_ms = 0;
+    HIP_CHECK(hipEventElapsedTime(&total_ms, start, stop));
+    float ms = total_ms / num_trials;
+
+    // Reset and do single clean run for numerical validation
+    HIP_CHECK(hipMemcpy(d_w, h_w, bytes, hipMemcpyHostToDevice));
+    launch_coherent_erosion_mi300x(d_w, d_g1, d_g2, d_scalars, rho, coherence_floor, n, 0);
+    HIP_CHECK(hipDeviceSynchronize());
 
     HIP_CHECK(hipMemcpy(h_w, d_w, bytes, hipMemcpyDeviceToHost));
     float h_scalars[4];
     HIP_CHECK(hipMemcpy(h_scalars, d_scalars, 4 * sizeof(float), hipMemcpyDeviceToHost));
 
-    printf("Kernel executed in: %.3f ms for %zu elements (Target < 3.0 ms)\n", ms, n);
+    printf("Kernel steady-state latency: %.4f ms for %zu elements (Target < 3.0 ms)\n", ms, n);
     printf("GPU Reductions: Dot: %.6e, N1_sq: %.6e, N2_sq: %.6e, NAvg_sq: %.6e\n",
            h_scalars[0], h_scalars[1], h_scalars[2], h_scalars[3]);
     printf("CPU Reference : Dot: %.6e, N1_sq: %.6e, N2_sq: %.6e, NAvg_sq: %.6e\n",
@@ -116,28 +135,80 @@ int main() {
     assert(rel_err_n2 < 1e-4f && "Norm2 relative error exceeds tolerance 1e-4");
     assert(rel_err_navg < 1e-4f && "NormAvg relative error exceeds tolerance 1e-4");
 
-    // Verify in-place parameter array updates match CPU reference within 1e-4
+    // Verify in-place parameter array updates match CPU reference within 1e-6 (strict Phase 4 gate criteria)
     float max_param_diff = 0.0f;
     for (size_t i = 0; i < n; i++) {
         float diff = fabsf(h_w[i] - h_w_ref[i]);
         if (diff > max_param_diff) max_param_diff = diff;
     }
     printf("Max parameter deviation (GPU vs CPU): %.2e\n", max_param_diff);
-    assert(max_param_diff < 1e-4f && "Parameter update deviation exceeds tolerance");
+    assert(max_param_diff < 1e-6f && "Parameter update deviation exceeds tolerance 1e-6");
+
+    // Bandwidth calculation for N = 1,000,000:
+    // Reduction: reads g1, g2 (8N bytes)
+    // Perturbation: reads w, g1, g2 (12N bytes), writes w (4N bytes)
+    // Total DRAM memory traffic = 24N bytes = 24 MB
+    double total_bytes = 24.0 * (double)n;
+    double gb_transferred = total_bytes / 1e9;
+    double effective_bw_gbs = gb_transferred / ((double)ms / 1000.0);
+    printf("MI300X Effective Memory Bandwidth (N=1M): %.2f GB/s (Peak HBM3: 5,300 GB/s)\n", effective_bw_gbs);
 
     printf("ALL REDUCTION AND NUMERICAL ASSERTIONS PASSED ON MI300X.\n");
 
     HIP_CHECK(hipFree(d_w));
     HIP_CHECK(hipFree(d_g1));
     HIP_CHECK(hipFree(d_g2));
-    HIP_CHECK(hipFree(d_scalars));
-    HIP_CHECK(hipEventDestroy(start));
-    HIP_CHECK(hipEventDestroy(stop));
     free(h_w);
     free(h_w_ref);
     free(h_g1);
     free(h_g2);
 
-    printf("Kernel test completed successfully on AMD MI300X!\n");
+    // Scaling Benchmark across N in [10^5, 10^7]
+    printf("\n=== Parameter Scaling & HBM3 Bandwidth Sweep [10^5, 10^7] ===\n");
+    size_t test_sizes[] = {100000, 500000, 1000000, 5000000, 10000000};
+    for (int s = 0; s < 5; s++) {
+        size_t cur_n = test_sizes[s];
+        size_t cur_bytes = cur_n * sizeof(float);
+        float *cur_w, *cur_g1, *cur_g2;
+        HIP_CHECK(hipMalloc(&cur_w, cur_bytes));
+        HIP_CHECK(hipMalloc(&cur_g1, cur_bytes));
+        HIP_CHECK(hipMalloc(&cur_g2, cur_bytes));
+        HIP_CHECK(hipMemset(cur_w, 0, cur_bytes));
+        HIP_CHECK(hipMemset(cur_g1, 0, cur_bytes));
+        HIP_CHECK(hipMemset(cur_g2, 0, cur_bytes));
+
+        // Warmup
+        for (int it = 0; it < 3; it++) {
+            launch_coherent_erosion_mi300x(cur_w, cur_g1, cur_g2, d_scalars, rho, coherence_floor, cur_n, 0);
+        }
+        HIP_CHECK(hipDeviceSynchronize());
+
+        int cur_trials = (cur_n <= 1000000) ? 50 : 20;
+        HIP_CHECK(hipEventRecord(start, 0));
+        for (int it = 0; it < cur_trials; it++) {
+            launch_coherent_erosion_mi300x(cur_w, cur_g1, cur_g2, d_scalars, rho, coherence_floor, cur_n, 0);
+        }
+        HIP_CHECK(hipEventRecord(stop, 0));
+        HIP_CHECK(hipEventSynchronize(stop));
+
+        float cur_ms = 0;
+        HIP_CHECK(hipEventElapsedTime(&cur_ms, start, stop));
+        cur_ms /= cur_trials;
+
+        double cur_traffic_bytes = 24.0 * (double)cur_n;
+        double cur_bw_gbs = (cur_traffic_bytes / 1e9) / ((double)cur_ms / 1000.0);
+        printf("  N = %10zu | Latency: %7.4f ms | Effective Bandwidth: %7.2f GB/s\n",
+               cur_n, cur_ms, cur_bw_gbs);
+
+        HIP_CHECK(hipFree(cur_w));
+        HIP_CHECK(hipFree(cur_g1));
+        HIP_CHECK(hipFree(cur_g2));
+    }
+
+    HIP_CHECK(hipFree(d_scalars));
+    HIP_CHECK(hipEventDestroy(start));
+    HIP_CHECK(hipEventDestroy(stop));
+
+    printf("\nKernel test and scaling sweep completed successfully on AMD Instinct MI300X!\n");
     return 0;
 }

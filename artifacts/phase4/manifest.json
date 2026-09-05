@@ -1,0 +1,32 @@
+{
+  "phase": 4,
+  "run_id": "phase4-20260905T151700Z",
+  "gate": "PASS",
+  "hardware_environment": {
+    "platform": "Linux x86_64",
+    "gpu": "AMD Instinct MI300X VF (gfx942, 205GB HBM3)",
+    "rocm_version": "ROCm 6.3 / hipcc 7.15 (clang 23.0.0git)",
+    "torch_version": "2.10.0.dev20250926+rocm6.3"
+  },
+  "cli_commands": [
+    "/opt/rocm/bin/hipcc -O3 --offload-arch=gfx942 kernels/coherent_erosion_kernel.hip kernels/test_kernel.cpp -o kernels/test_kernel",
+    "./kernels/test_kernel",
+    "python3 kernels/benchmark_gpu.py"
+  ],
+  "random_seeds": [
+    42
+  ],
+  "input_paths": [
+    "kernels/coherent_erosion_kernel.hip",
+    "kernels/test_kernel.cpp",
+    "kernels/benchmark_gpu.py"
+  ],
+  "output_paths": [
+    "kernels/test_kernel"
+  ],
+  "sha256_checksums": {
+    "kernels/coherent_erosion_kernel.hip": "c19fa7b0820ddceffded45d68db6014a67c61aa2d4397bf1ccf3502371c539aa",
+    "kernels/test_kernel.cpp": "399a525052e7474ad30806323e43a269070b0c78bfd7f437fd2f33c2114eaaba",
+    "kernels/benchmark_gpu.py": "c09ee3d2f3596808c12ba118c697536c28cd0b3e7947f2278b5d1d7bcd2d6d64"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "phase": 2,
+  "run_id": "phase2-20260905T143000Z",
+  "gate": "PASS",
+  "hardware_environment": {
+    "platform": "Linux x86_64",
+    "python_version": "3.12.3",
+    "torch_version": "2.10.0.dev20250926+rocm6.3"
+  },
+  "cli_commands": [
+    "python3 /root/iso-anti-sam/analysis/numerical_analysis.py"
+  ],
+  "random_seeds": [
+    42
+  ],
+  "input_paths": [
+    "analysis/numerical_analysis.py"
+  ],
+  "output_paths": [
+    "analysis/figures/simulation_landscape.png",
+    "analysis/figures/divergence_scaling.png"
+  ],
+  "sha256_checksums": {
+    "analysis/numerical_analysis.py": "d36a36c7e5809577a6baf50039e6e9e2ae9743f2d928b47bd940d5e31fc7f940",
+    "analysis/figures/simulation_landscape.png": "8f61fa1a267557c89cec66ee5b5504164aa688b457e40b376ddb4e09971857bf",
+    "analysis/figures/divergence_scaling.png": "448c66a91459ddc29038d71241ea6c0a1ec5d50c9c4a4f940956bbf7780acff4"
+  }
+}
