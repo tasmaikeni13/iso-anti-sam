@@ -87,34 +87,6 @@ cd kernels
 
 ---
 
-## 📊 WikiText-103 FlashAttention & Comparative Benchmarks (Phases 5 & 6)
-
-We evaluate autoregressive language modeling on WikiText-103 using a 6-layer causal Transformer (~14.59M parameters, dim=384, heads=6, seq_len=256) on 1x AMD Instinct MI300X (205 GB VRAM, `gfx942`). The architecture integrates **FlashAttention** via PyTorch's native SDPA mapped to ROCm CK/AOTriton kernels, coupled with online **Hessian Spectral Sharpness ($\lambda_{\max}$)** tracking via power iteration (reports: [`artifacts/phase5/report.md`](artifacts/phase5/report.md), [`artifacts/phase6/report.md`](artifacts/phase6/report.md)):
-
-### 10-Epoch Comparative Results (1x AMD MI300X)
-
-| Optimizer | Final Val Loss | Final Val Perplexity (PPL) | Hessian $\lambda_{\max}(H)$ | Avg Time / Epoch | Total Steps | Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **AdamW Baseline** | **4.4557** | **86.11** | 36.25 | **3.47 s** | 1,000 | **CERTIFIED** |
-| **Raw Anti-SAM ($\rho=0.05$)** | 4.4707 | 87.42 | 74.60 | 6.86 s | 1,000 | **CERTIFIED** |
-| **IsoAntiSAM (Ours, $\rho=0.05$)** | 4.4825 | 88.45 | 58.87 | 8.23 s | 1,000 | **CERTIFIED** |
-| **Standard SAM ($\rho=0.05$)** | 4.6561 | 105.23 | **13.45** | 6.87 s | 1,000 | **CERTIFIED** |
-
-### Key Insights
-1. **Basin Curvature Dynamics ($\lambda_{\max}$)**: Standard SAM converges to an ultra-flat minimum ($\lambda_{\max} \approx 13.45$). Raw Anti-SAM pushes aggressively into sharp needles ($\lambda_{\max} = 74.60$). IsoAntiSAM provides bounded, regularized curvature ($\lambda_{\max} = 58.87$) through isochoric gauge divergence neutralization ($\operatorname{div}_{T^\perp}(E_{\text{iso}}) = 0$).
-2. **FlashAttention Acceleration**: ROCm 6.3 SDPA FlashAttention kernels deliver a 2.3x speedup on MI300X, dropping single-pass epoch training time to 3.47 seconds (> 47,000 tokens/sec).
-3. **Synchronous Descent**: Under IsoAntiSAM, train loss and validation loss descend synchronously, preventing catastrophic divergence.
-
-To reproduce:
-```bash
-python3 benchmarks/train_wikitext.py --optimizer adamw --epochs 10 --device cuda:0
-python3 benchmarks/train_wikitext.py --optimizer sam --epochs 10 --device cuda:0
-python3 benchmarks/train_wikitext.py --optimizer anti_sam --epochs 10 --device cuda:0
-python3 benchmarks/train_wikitext.py --optimizer iso_anti_sam --epochs 10 --device cuda:0
-python3 benchmarks/plot_benchmark.py
-```
-
----
 
 ## 🚀 Quickstart
 
@@ -180,18 +152,11 @@ iso-anti-sam/
 │   ├── figures/             # Simulation trajectory and scaling plots
 │   ├── numerical_analysis.py
 │   └── theoretical_derivation.md
-├── benchmarks/              # WikiText-103 and language modeling benchmarks
-│   ├── train_wikitext.py    # 6-layer causal Transformer training harness
 ├── artifacts/               # Standardized phase reports, manifests, and command logs
 │   ├── phase1/              # Lean 4 formal verification report & evidence
 │   ├── phase2/              # Numerical simulation & divergence scaling report
 │   ├── phase3/              # Optimizer architecture & unit test audit
-│   ├── phase4/              # AMD ROCm/HIP fused kernel MI300X audit
-│   ├── phase5/              # WikiText-103 baseline screening report
-│   └── phase6/              # FlashAttention & 10-epoch comparative report
-├── benchmarks/              # WikiText-103 and language modeling benchmarks
-│   ├── train_wikitext.py    # 6-layer causal Transformer training harness
-│   └── plot_benchmark.py    # Perplexity, loss & Hessian sharpness visualizer
+│   └── phase4/              # AMD ROCm/HIP fused kernel MI300X audit
 ├── kernels/                 # Native HIP C++ GPU kernels for AMD MI300X (gfx942)
 │   ├── coherent_erosion_kernel.hip
 │   ├── test_kernel.cpp
@@ -201,8 +166,6 @@ iso-anti-sam/
 │   ├── IsoAntiSam.lean
 │   ├── Main.lean
 │   └── lakefile.toml
-├── logs/                    # Training histories, checkpoints, and benchmark comparison plots
-│   └── wikitext/
 ├── paper/                   # Complete scientific research paper
 │   ├── paper.tex            # LaTeX source (5 pages, publication ready)
 │   ├── paper.pdf            # Compiled PDF
@@ -234,8 +197,8 @@ This repository is governed by an autonomous research state machine documented i
 - **Phase 2**: Landscape Geometry, Caustic Collapse Dynamics & Transverse Divergence Diagnostics. ([Report](artifacts/phase2/report.md) | [Status: PASS](phases/status/phase2.json))
 - **Phase 3**: PyTorch Optimizer Architecture, Unit Testing & Algorithmic Invariants. ([Report](artifacts/phase3/report.md) | [Status: PASS](phases/status/phase3.json))
 - **Phase 4**: Native AMD ROCm/HIP C++ Coherent Erosion Kernel & MI300X Profiling. ([Report](artifacts/phase4/report.md) | [Status: PASS](phases/status/phase4.json))
-- **Phase 5**: Small-Scale Falsification, Multi-Workload Screening & WikiText-103 Baselines. ([Report](artifacts/phase5/report.md) | [Status: PASS](phases/status/phase5.json))
-- **Phase 6**: Scaling Pilot, 8x MI300X Distributed Orchestration (RCCL DDP) & Dual Preregistration. ([Report](artifacts/phase6/report.md) | [Status: REVISE](phases/status/phase6.json))
+- **Phase 5**: Small-Scale Falsification, Multi-Workload Screening & WikiText-103 Baselines.
+- **Phase 6**: Scaling Pilot, 8x MI300X Distributed Orchestration (RCCL DDP) & Dual Preregistration.
 - **Phase 7**: Frozen 125M-Parameter, 1B-Token Confirmatory Pretraining on FineWeb-Edu (8x MI300X).
 - **Phase 8**: Frozen 350M-Parameter, 3B-Token Flagship Pretraining on FineWeb-Edu (8x MI300X).
 - **Phase 9**: Cross-Scale Generalization Analysis, Downstream Benchmarks & Final Paper.
