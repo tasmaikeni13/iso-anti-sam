@@ -85,7 +85,7 @@ extern "C" void launch_coherent_erosion_mi300x(
     size_t n,
     hipStream_t stream
 ) {
-    hipMemsetAsync(d_scalars, 0, 4 * sizeof(float), stream);
+    (void)hipMemsetAsync(d_scalars, 0, 4 * sizeof(float), stream);
     
     int blockSize = 256;
     int numBlocks = (n + blockSize - 1) / blockSize;

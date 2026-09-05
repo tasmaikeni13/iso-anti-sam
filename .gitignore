@@ -61,3 +61,13 @@ kernels/test_kernel
 *.exe
 .lake/
 build/
+
+# Large dataset files & checkpoints
+data/
+*.npy
+*.pt
+*.raw
+*.parquet
+*.bin
+*.zip
+logs/**/*.pt

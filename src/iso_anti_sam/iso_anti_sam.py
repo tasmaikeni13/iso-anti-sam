@@ -46,7 +46,8 @@ class IsoAntiSAM(Optimizer):
                 
         norm1 = norm_sq_1 ** 0.5 + 1e-12
         norm2 = norm_sq_2 ** 0.5 + 1e-12
-        cos_sim = dot_product / (norm1 * norm2)
+        cos_sim = float(dot_product / (norm1 * norm2))
+        cos_sim = max(-1.0, min(1.0, cos_sim))
 
         # Average gradient norm
         g_avg_list = []
@@ -61,14 +62,14 @@ class IsoAntiSAM(Optimizer):
                 
         norm_avg = norm_sq_avg ** 0.5 + 1e-12
         
+        idx = 0
         for group in self.param_groups:
             gate = max(group.get("coherence_floor", 0.0), cos_sim)
             rho = group["rho"]
             scale = -rho * gate / norm_avg
             
-            idx = 0
             for p in group["params"]:
-                if p.grad is None or g_avg_list[idx] is None:
+                if idx >= len(g_avg_list) or g_avg_list[idx] is None:
                     idx += 1
                     continue
                 self.state[p]["old_p"] = p.data.clone()
@@ -86,7 +87,10 @@ class IsoAntiSAM(Optimizer):
                 if p.grad is None:
                     continue
                 if "old_p" in self.state[p]:
-                    p.data = self.state[p]["old_p"]
+                    p.data.copy_(self.state[p]["old_p"])
         self.base_optimizer.step()
         if zero_grad:
             self.zero_grad()
+
+    def zero_grad(self, set_to_none=False):
+        self.base_optimizer.zero_grad(set_to_none=set_to_none)
