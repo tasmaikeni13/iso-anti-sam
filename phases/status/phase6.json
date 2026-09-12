@@ -1,7 +1,7 @@
 {
   "phase": 6,
   "gate": "PASS",
-  "handoff_commit": "dd91ea929a90796688819e992896a63effb65f09",
+  "handoff_commit": "b6994f0616147413697eb58a9ceb6caabeb487a3",
   "run_id": "phase6-20260912T104500Z",
   "timestamp_utc": "2026-09-12T10:45:00Z",
   "invalidated_downstream_phases": [],
