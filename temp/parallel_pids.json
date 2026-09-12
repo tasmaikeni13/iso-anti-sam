@@ -1,0 +1,38 @@
+[
+  {
+    "run_id": "adamw_seed42",
+    "pid": 271821,
+    "out_log": "/root/carve/temp/logs/adamw_seed42.out",
+    "log_json": "/root/carve/temp/logs/adamw_seed42_history.json"
+  },
+  {
+    "run_id": "adamw_seed43",
+    "pid": 271862,
+    "out_log": "/root/carve/temp/logs/adamw_seed43.out",
+    "log_json": "/root/carve/temp/logs/adamw_seed43_history.json"
+  },
+  {
+    "run_id": "sam_seed42",
+    "pid": 271904,
+    "out_log": "/root/carve/temp/logs/sam_seed42.out",
+    "log_json": "/root/carve/temp/logs/sam_seed42_history.json"
+  },
+  {
+    "run_id": "sam_seed43",
+    "pid": 271948,
+    "out_log": "/root/carve/temp/logs/sam_seed43.out",
+    "log_json": "/root/carve/temp/logs/sam_seed43_history.json"
+  },
+  {
+    "run_id": "carve_seed42",
+    "pid": 271990,
+    "out_log": "/root/carve/temp/logs/carve_seed42.out",
+    "log_json": "/root/carve/temp/logs/carve_seed42_history.json"
+  },
+  {
+    "run_id": "carve_seed43",
+    "pid": 272033,
+    "out_log": "/root/carve/temp/logs/carve_seed43.out",
+    "log_json": "/root/carve/temp/logs/carve_seed43_history.json"
+  }
+]
