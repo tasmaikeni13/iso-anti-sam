@@ -5,9 +5,10 @@ Reversing Sharpness-Aware Minimization for fast training and validation loss col
 
 from .anti_sam import AntiSAM
 from .carve import Carve
+from .sam import SAM
 
 # Backward compatibility alias
 IsoAntiSAM = Carve
 
-__all__ = ["Carve", "AntiSAM", "IsoAntiSAM"]
+__all__ = ["Carve", "AntiSAM", "IsoAntiSAM", "SAM"]
 __version__ = "0.1.0"

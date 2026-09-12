@@ -1,0 +1,78 @@
+{
+  "protocol_version": "1.0.0",
+  "phase": 7,
+  "title": "Frozen 125M-Parameter, 3B-Token Confirmatory Pretraining on FineWeb-Edu",
+  "immutable": true,
+  "model": {
+    "architecture": "decoder-only-transformer",
+    "name": "carve-125m",
+    "total_parameters": 123551232,
+    "non_embedding_parameters": 84953856,
+    "dim": 768,
+    "n_layers": 12,
+    "n_heads": 12,
+    "head_dim": 64,
+    "intermediate_dim": 2048,
+    "max_seq_len": 2048,
+    "vocab_size": 50257,
+    "norm": "RMSNorm",
+    "position_embeddings": "RoPE",
+    "activation": "SwiGLU",
+    "attention": "FlashAttention_SDPA",
+    "weight_tying": true
+  },
+  "training": {
+    "dataset": "HuggingFaceFW/fineweb-edu",
+    "token_budget": 3000000000,
+    "seq_len": 2048,
+    "global_batch_size_tokens": 524288,
+    "global_batch_size_sequences": 256,
+    "micro_batch_size": 4,
+    "gradient_accumulation_steps": 8,
+    "target_cluster": "8x AMD Instinct MI300X VF (gfx942)",
+    "precision": "bfloat16",
+    "max_steps": 5722,
+    "warmup_steps": 114,
+    "cosine_min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "confirmatory_seeds": [42, 43, 44]
+  },
+  "frozen_optimizers": {
+    "carve": {
+      "base_optimizer": "torch.optim.AdamW",
+      "lr": 0.0006,
+      "rho_0": 0.02,
+      "rho_schedule": "cosine_decay",
+      "coherence_floor": 0.0,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8
+    },
+    "adamw": {
+      "lr": 0.0006,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8,
+      "fused": true
+    },
+    "sam": {
+      "base_optimizer": "torch.optim.AdamW",
+      "lr": 0.0006,
+      "rho": 0.02,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8
+    }
+  },
+  "evaluation": {
+    "eval_interval_steps": 100,
+    "eval_tokens_per_step": 50000,
+    "curvature_tracking_interval_steps": 500,
+    "checkpoint_interval_tokens": 500000000
+  },
+  "success_criteria": {
+    "carve_ppl_margin_over_adamw": 1.0,
+    "zero_nan_or_spike": true,
+    "zero_inter_rank_drift": true
+  }
+}

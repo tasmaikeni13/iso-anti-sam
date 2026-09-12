@@ -1,0 +1,65 @@
+{
+  "phase": 6,
+  "run_id": "phase6-20260912T104500Z",
+  "gate": "PASS",
+  "hardware_environment": {
+    "platform": "Linux x86_64",
+    "gpu": "1x AMD Instinct MI300X VF (gfx942, 205GB HBM3, 750W)",
+    "python_version": "3.12.3",
+    "torch_version": "2.5.1+rocm6.2",
+    "hip_version": "7.15.26333"
+  },
+  "dataset": {
+    "name": "HuggingFaceFW/fineweb-edu",
+    "vocab_size": 50257,
+    "125m_protocol_tokens": 3000000000,
+    "350m_protocol_tokens": 7000000000
+  },
+  "cli_commands": [
+    "python3 -m unittest discover -s tests -p 'test_*.py' -v",
+    "python3 kernels/benchmark_gpu.py",
+    "python3 /root/carve/hyperparameters/run_sweep.py"
+  ],
+  "random_seeds": [
+    42,
+    43,
+    44
+  ],
+  "input_paths": [
+    "src/carve/carve.py",
+    "src/carve/sam.py",
+    "src/carve/__init__.py",
+    "tests/test_optimizer.py",
+    "hyperparameters/model_transformer.py",
+    "hyperparameters/fineweb_loader.py",
+    "hyperparameters/sweep_search_space.py",
+    "hyperparameters/train_distributed.py",
+    "hyperparameters/run_sweep.py"
+  ],
+  "output_paths": [
+    "hyperparameters/config_125m_3b.json",
+    "hyperparameters/config_350m_7b.json",
+    "hyperparameters/sweep_results.json",
+    "hyperparameters/sweep_comparison.png",
+    "analysis/figures/sweep_comparison.png",
+    "experiments/protocols/phase7_125m_protocol.json",
+    "experiments/protocols/phase8_350m_protocol.json",
+    "phases/status/phase6.json"
+  ],
+  "sha256_checksums": {
+    "src/carve/sam.py": "96b419ead182a0ed294125871010d3badd30b74b6d05e6fc148581210c8d8df7",
+    "src/carve/carve.py": "305ca764db0a8216fc7cd5b4c5bcdb2f8750d2205326c6e0378dd773eb39c653",
+    "src/carve/__init__.py": "ff40385d1cdfb402ce38d18c5de0d3a4d10894c4e89b7fd271423deb9d1a9078",
+    "tests/test_optimizer.py": "1623f49e7e5bc464c1dcd98a4c2b9bea5183437db8ff3aebab07782b6352ec01",
+    "hyperparameters/model_transformer.py": "1166fbc4d6b23b523b1552d257063c6d84197e667626fd012d2800e3e407fd55",
+    "hyperparameters/fineweb_loader.py": "4f4ed9c20df906a84923e7675603c628c3b3c8048fc38d7f7980a9663c31ede2",
+    "hyperparameters/sweep_search_space.py": "9896e6b30c8f6ccfb6551194fef18771184d1f2a0a160d5fea7a7f45d839ae61",
+    "hyperparameters/run_sweep.py": "a3cdc34741a4fe72dde499ab6e4723a4f65bd8794da92cbd5b9d9f05336c0ddf",
+    "hyperparameters/train_distributed.py": "14af7c5d740cce2746a4c94bcbde11dc7092eb1c212cce2fbf1774ccc4594206",
+    "hyperparameters/config_125m_3b.json": "f60efb7f1f03e837e5595c4f850124b49332d2eb5372ff9ad4dd600b55f08bdd",
+    "hyperparameters/config_350m_7b.json": "54475f0c2222319d5381e0f2c043e2d948ee6de749f105ebde49adec0745ba55",
+    "hyperparameters/sweep_results.json": "0399e190f1fbfe2b95e328463a8a401516cfea91281db91e58cad577f3a5c81a",
+    "experiments/protocols/phase7_125m_protocol.json": "7a561f39f41a5ca732bce7f531b0843ac151b7c39c8a26d49419b949440df845",
+    "experiments/protocols/phase8_350m_protocol.json": "91aa228ff4410b09b4a5ce2782d0a5abce28a178074b0d02ecb305ef5b1be2d8"
+  }
+}

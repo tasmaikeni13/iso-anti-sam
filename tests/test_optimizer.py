@@ -1,7 +1,7 @@
 import unittest
 import torch
 import torch.nn as nn
-from carve import AntiSAM, Carve, IsoAntiSAM
+from carve import AntiSAM, Carve, IsoAntiSAM, SAM
 
 class TestOptimizers(unittest.TestCase):
 
@@ -223,6 +223,49 @@ class TestOptimizers(unittest.TestCase):
         self.assertTrue(-1.0 <= sim <= 1.0)
         loss_full = m(x).sum()
         loss_full.backward()
+        opt.step_with_bilateral(zero_grad=True)
+
+    def test_sam_step(self):
+        """Verifies Vanilla SAM forward perturbation, restoration, and parameter update."""
+        m = nn.Linear(8, 2)
+        opt = SAM(m.parameters(), base_optimizer_cls=torch.optim.AdamW, lr=1e-3, rho=0.05)
+        
+        orig_w = m.weight.clone()
+        x = torch.randn(4, 8)
+        loss = m(x).sum()
+        loss.backward()
+        
+        opt.first_step(zero_grad=True)
+        # Weights should be perturbed
+        self.assertFalse(torch.equal(m.weight, orig_w))
+        self.assertIn("old_p", opt.state[m.weight])
+        
+        # Second step restores weights and applies update
+        loss2 = m(x).sum()
+        loss2.backward()
+        opt.second_step(zero_grad=True)
+        
+        # old_p should be cleaned up
+        self.assertNotIn("old_p", opt.state[m.weight])
+        # Weights should have updated from orig_w
+        self.assertFalse(torch.equal(m.weight, orig_w))
+
+    def test_carve_dynamic_schedule(self):
+        """Verifies that Carve supports dynamic rho overrides for cosine perturbation decay."""
+        m = nn.Linear(4, 2, bias=False)
+        opt = Carve(m.parameters(), lr=0.01, rho=0.10)
+        
+        orig_w = m.weight.clone()
+        g1 = [torch.ones_like(m.weight)]
+        g2 = [torch.ones_like(m.weight)]
+        
+        # Override rho with scheduled value 0.02
+        opt.compute_bilateral_perturbation(g1, g2, rho=0.02)
+        
+        # Norm of perturbation should correspond to rho=0.02, not 0.10
+        pert_norm = torch.linalg.vector_norm(m.weight - orig_w).item()
+        self.assertAlmostEqual(pert_norm, 0.02, places=4)
+        
         opt.step_with_bilateral(zero_grad=True)
 
 if __name__ == '__main__':

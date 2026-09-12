@@ -1,0 +1,79 @@
+{
+  "protocol_version": "1.0.0",
+  "phase": 8,
+  "title": "Frozen 350M-Parameter, 7B-Token Flagship Pretraining on FineWeb-Edu",
+  "immutable": true,
+  "model": {
+    "architecture": "decoder-only-transformer",
+    "name": "carve-350m",
+    "total_parameters": 359794688,
+    "non_embedding_parameters": 308331520,
+    "dim": 1024,
+    "n_layers": 24,
+    "n_heads": 16,
+    "head_dim": 64,
+    "intermediate_dim": 2816,
+    "max_seq_len": 2048,
+    "vocab_size": 50257,
+    "norm": "RMSNorm",
+    "position_embeddings": "RoPE",
+    "activation": "SwiGLU",
+    "attention": "FlashAttention_SDPA",
+    "weight_tying": true
+  },
+  "training": {
+    "dataset": "HuggingFaceFW/fineweb-edu",
+    "token_budget": 7000000000,
+    "seq_len": 2048,
+    "global_batch_size_tokens": 1048576,
+    "global_batch_size_sequences": 512,
+    "micro_batch_size": 4,
+    "gradient_accumulation_steps": 16,
+    "target_cluster": "8x AMD Instinct MI300X VF (gfx942)",
+    "precision": "bfloat16",
+    "max_steps": 6675,
+    "warmup_steps": 133,
+    "cosine_min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "confirmatory_seeds": [42, 43, 44]
+  },
+  "frozen_optimizers": {
+    "carve": {
+      "base_optimizer": "torch.optim.AdamW",
+      "lr": 0.0004,
+      "rho_0": 0.015,
+      "rho_schedule": "cosine_decay",
+      "coherence_floor": 0.0,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8
+    },
+    "adamw": {
+      "lr": 0.0004,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8,
+      "fused": true
+    },
+    "sam": {
+      "base_optimizer": "torch.optim.AdamW",
+      "lr": 0.0004,
+      "rho": 0.015,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8
+    }
+  },
+  "evaluation": {
+    "eval_interval_steps": 100,
+    "eval_tokens_per_step": 100000,
+    "curvature_tracking_interval_steps": 500,
+    "checkpoint_interval_tokens": 500000000
+  },
+  "success_criteria": {
+    "carve_token_efficiency_gain": 0.15,
+    "target_cluster_throughput_tokens_per_sec": 180000,
+    "target_cluster_mfu": 0.38,
+    "zero_hardware_drop_or_nan": true
+  }
+}

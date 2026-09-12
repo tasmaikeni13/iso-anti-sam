@@ -1,0 +1,76 @@
+{
+  "model": {
+    "architecture": "decoder-only-transformer",
+    "name": "carve-125m",
+    "parameters": 123551232,
+    "dim": 768,
+    "n_layers": 12,
+    "n_heads": 12,
+    "hidden_dim": 2048,
+    "max_seq_len": 2048,
+    "vocab_size": 50257,
+    "norm": "RMSNorm",
+    "position_embeddings": "RoPE",
+    "activation": "SwiGLU",
+    "attention": "FlashAttention_SDPA"
+  },
+  "training": {
+    "dataset": "HuggingFaceFW/fineweb-edu",
+    "token_budget": 3000000000,
+    "seq_len": 2048,
+    "global_batch_size_tokens": 524288,
+    "micro_batch_size": 4,
+    "gradient_accumulation_steps": 64,
+    "max_steps": 5722,
+    "precision": "bfloat16",
+    "warmup_steps": 114,
+    "cosine_min_lr_ratio": 0.1,
+    "grad_clip": 1.0,
+    "confirmatory_seeds": [42, 43, 44]
+  },
+  "hyperparameter_search_space": {
+    "adamw": {
+      "lr": [0.0003, 0.0006, 0.001],
+      "weight_decay": [0.01, 0.1],
+      "betas": [0.9, 0.95],
+      "eps": 1e-8,
+      "fused": true
+    },
+    "sam": {
+      "lr": [0.0003, 0.0006],
+      "rho": [0.01, 0.02, 0.05, 0.1],
+      "adaptive": [false, true],
+      "base_optimizer": "adamw",
+      "weight_decay": 0.01
+    },
+    "carve": {
+      "lr": [0.0003, 0.0006, 0.001],
+      "rho_0": [0.005, 0.01, 0.02, 0.05],
+      "coherence_floor": [0.0, 0.02],
+      "schedule": ["cosine_decay", "constant"],
+      "base_optimizer": "adamw",
+      "weight_decay": 0.01
+    }
+  },
+  "optimal_preregistered_hyperparameters": {
+    "adamw": {
+      "lr": 0.0006,
+      "weight_decay": 0.01,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8
+    },
+    "sam": {
+      "lr": 0.0006,
+      "rho": 0.02,
+      "adaptive": false,
+      "weight_decay": 0.01
+    },
+    "carve": {
+      "lr": 0.0006,
+      "rho_0": 0.02,
+      "coherence_floor": 0.0,
+      "schedule": "cosine_decay",
+      "weight_decay": 0.01
+    }
+  }
+}

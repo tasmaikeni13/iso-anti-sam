@@ -1,0 +1,4 @@
+pip install -e . --break-system-packages
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+python3 kernels/benchmark_gpu.py
+python3 /root/carve/hyperparameters/run_sweep.py
