@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="iso_anti_sam",
+    name="carve",
     version="0.1.0",
-    description="Isochoric and Coherent Anti-Sharpness-Aware Minimization",
+    description="Carve: Coherent Morphological Loss Erosion for Fast Generalization",
     author="tasmaikeni13",
     package_dir={"": "src"},
     packages=find_packages(where="src"),

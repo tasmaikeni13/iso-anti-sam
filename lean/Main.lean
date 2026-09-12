@@ -1,10 +1,10 @@
-import IsoAntiSam
+import Carve
 
-open IsoAntiSam
+open Carve
 
 def main : IO Unit := do
   IO.println "================================================================================"
-  IO.println "              IsoAntiSAM: Comprehensive Lean 4 Formal Proof Harness             "
+  IO.println "                Carve: Comprehensive Lean 4 Formal Proof Harness                "
   IO.println "================================================================================"
   IO.println "All 9 foundational theoretical modules have been machine-verified in Lean 4:"
   IO.println ""

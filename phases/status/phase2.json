@@ -7,7 +7,7 @@
   "invalidated_downstream_phases": [],
   "reasons": [
     "Numerical landscape simulation verifies that standard Anti-SAM is trapped in sharp needle basins (d = 0.0641 < r_0 = 0.15) with high validation loss (2.4890).",
-    "IsoAntiSAM escapes the sharp needle attractor (d = 0.7578 >> r_0) and achieves validation loss 0.0532, satisfying the validation loss ratio criterion (L_iso / L_anti = 0.0214 <= 0.80).",
-    "Divergence scaling diagnostics across dimensions d in [2, 100] confirm that Anti-SAM divergence scales negatively with dimension (div(E_anti) ~ -d * Tr(H_perp) / ||g||), while IsoAntiSAM strictly maintains div(E_iso) = 0."
+    "Carve escapes the sharp needle attractor (d = 0.7578 >> r_0) and achieves validation loss 0.0532, satisfying the validation loss ratio criterion (L_iso / L_anti = 0.0214 <= 0.80).",
+    "Divergence scaling diagnostics across dimensions d in [2, 100] confirm that Anti-SAM divergence scales negatively with dimension (div(E_anti) ~ -d * Tr(H_perp) / ||g||), while Carve strictly maintains div(E_iso) = 0."
   ]
 }

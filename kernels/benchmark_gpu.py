@@ -48,8 +48,9 @@ if __name__ == "__main__":
     py_time = benchmark_pytorch_mi300x()
     print(f"PyTorch Multi-Kernel Eager on MI300X: {py_time:.3f} ms / step (1M elements)")
     
-    # Run HIP test kernel
-    res = subprocess.run(["/root/iso-anti-sam/kernels/test_kernel"], capture_output=True, text=True)
+    import os
+    kernel_bin = os.path.join(os.path.dirname(__file__), "test_kernel")
+    res = subprocess.run([kernel_bin], capture_output=True, text=True)
     for line in res.stdout.splitlines():
         if "Kernel steady-state latency:" in line or "Kernel executed in:" in line:
             print(f"Native HIP Fused Kernel on MI300X:   {line.split(': ')[1].split(' for')[0]} / step (1M elements)")

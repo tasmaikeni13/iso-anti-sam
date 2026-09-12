@@ -1,6 +1,6 @@
 # Phase 6: Scaling Pilot, 8x MI300X Multi-GPU Distributed Orchestration & Dual Preregistration
 
-Work autonomously in the IsoAntiSAM repository and complete Phase 6. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 5. This phase establishes multi-GPU distributed orchestration and freezes the confirmatory pretraining protocols before launching long GPU runs.
+Work autonomously in the Carve repository and complete Phase 6. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 5. This phase establishes multi-GPU distributed orchestration and freezes the confirmatory pretraining protocols before launching long GPU runs.
 
 ## 1. Objective
 Establish multi-GPU distributed scaling across the **8x AMD Instinct MI300X** cluster using PyTorch DistributedDataParallel (`torchrun --nproc_per_node=8`) with AMD RCCL. Resolve perturbation schedule calibration for language models, benchmark multi-GPU throughput and MFU scaling, and preregister immutable protocols for training:
@@ -12,7 +12,7 @@ Establish multi-GPU distributed scaling across the **8x AMD Instinct MI300X** cl
    - On the 14M Transformer, resolve late-stage gradient jitter by evaluating a cosine perturbation decay schedule:
      $$\rho_t = \rho_0 \cdot \frac{1}{2}\left(1 + \cos\left(\frac{\pi t}{T}\right)\right)$$
    - Calibrate base perturbation radius $\rho_0 \in [0.005, 0.01, 0.02, 0.05]$.
-   - Confirm that with scheduled erosion decay, IsoAntiSAM outperforms standard AdamW in final validation perplexity by $\ge 1.0$ PPL point on WikiText-103.
+   - Confirm that with scheduled erosion decay, Carve outperforms standard AdamW in final validation perplexity by $\ge 1.0$ PPL point on WikiText-103.
 2. **Multi-GPU Distributed Orchestration on 8x MI300X**:
    - Implement multi-GPU DDP support with AMD ROCm RCCL communication (`torch.distributed.init_process_group('nccl')`).
    - Implement distributed bilateral all-reduce: ensure micro-batch gradients $g_1, g_2$ are all-reduced across all 8 ranks before evaluating the coherence gate and isochoric perturbation.

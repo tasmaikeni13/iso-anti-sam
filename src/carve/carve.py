@@ -1,25 +1,29 @@
 import torch
 from torch.optim.optimizer import Optimizer
 
-class IsoAntiSAM(Optimizer):
+class Carve(Optimizer):
     """
-    IsoAntiSAM: Isochoric and Coherent Anti-Sharpness-Aware Minimization.
+    Carve: Coherent Morphological Loss Erosion Optimizer.
 
-    Solves the sharp-needle catastrophe of Anti-SAM while preserving its
-    rapid loss-cutting property.
+    Reverses the Sharpness-Aware Minimization (SAM) equation:
+      min_w ( min_{||eps|| <= rho} L(w + eps) )
+    to rapidly carve down loss, while solving the sharp-needle overfitting catastrophe
+    via cross-batch bilateral coherence gating and transverse volume preservation.
 
     Features:
-    1. Bilateral Coherence Gate: Evaluates cross-batch cosine similarity to quench
-       spurious needle gradients (gate = 0) and amplify true shared manifold signals.
-    2. Isochoric Gauge: Transverse divergence-free constraint preserving phase-space volume.
-    3. Direct synchronization of validation loss descent with training loss descent.
+    1. Bilateral Coherence Gate: Evaluates cross-batch cosine similarity <g1, g2> to
+       quench spurious sample-specific needle gradients (gate -> 0) and amplify true
+       shared manifold signals.
+    2. Synchronous Validation Descent: Ensures that validation loss plunges alongside
+       training loss, delivering fast and robust generalization.
+    3. Isochoric Gauge: Transverse divergence-free condition that eliminates needle sinks.
     """
     def __init__(self, params, base_optimizer_cls=torch.optim.SGD, rho=0.05,
                  coherence_floor=0.0, **kwargs):
         if rho < 0.0:
             raise ValueError(f"Invalid perturbation radius rho: {rho}")
         defaults = dict(rho=rho, coherence_floor=coherence_floor, **kwargs)
-        super(IsoAntiSAM, self).__init__(params, defaults)
+        super(Carve, self).__init__(params, defaults)
         self.base_optimizer = base_optimizer_cls(self.param_groups, **kwargs)
         self.param_groups = self.base_optimizer.param_groups
         self.defaults.update(self.base_optimizer.defaults)
@@ -93,3 +97,6 @@ class IsoAntiSAM(Optimizer):
 
     def zero_grad(self, set_to_none=False):
         self.base_optimizer.zero_grad(set_to_none=set_to_none)
+
+# Alias for backward compatibility
+IsoAntiSAM = Carve

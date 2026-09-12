@@ -1,9 +1,9 @@
 # Phase 1: Adversarial Novelty, Morphological Erosion Theory & Lean 4 Formal Audit
 
-Work autonomously in the IsoAntiSAM repository and complete Phase 1. Read `phases/README.md` first and adhere strictly to its state machine and guardrails. This is a foundational mathematical and novelty phase: do not train neural networks or spend significant GPU compute.
+Work autonomously in the Carve repository and complete Phase 1. Read `phases/README.md` first and adhere strictly to its state machine and guardrails. This is a foundational mathematical and novelty phase: do not train neural networks or spend significant GPU compute.
 
 ## 1. Objective
-Subject the core theoretical claims of IsoAntiSAM to hostile mathematical scrutiny. Determine whether **Morphological Erosion Optimization** $\mathcal{E}_\rho[L](w) = \inf_{\|\epsilon\| \le \rho} L(w + \epsilon)$, the **Isochoric Gauge Condition** ($\operatorname{div}_{T^\perp}(E_{\text{iso}}) = 0$), and **Bilateral Coherence Gating** ($\mathbb{E}[\langle g_1, g_2 \rangle] = \|\nabla L_{\mathcal{D}}\|^2$) represent a genuine, non-compositional mathematical primitive, prove all defining properties, and machine-verify the complete formal foundation in Lean 4.
+Subject the core theoretical claims of Carve to hostile mathematical scrutiny. Determine whether **Morphological Erosion Optimization** $\mathcal{E}_\rho[L](w) = \inf_{\|\epsilon\| \le \rho} L(w + \epsilon)$, the **Isochoric Gauge Condition** ($\operatorname{div}_{T^\perp}(E_{\text{iso}}) = 0$), and **Bilateral Coherence Gating** ($\mathbb{E}[\langle g_1, g_2 \rangle] = \|\nabla L_{\mathcal{D}}\|^2$) represent a genuine, non-compositional mathematical primitive, prove all defining properties, and machine-verify the complete formal foundation in Lean 4.
 
 ## 2. Required Work
 1. **Hostile Mathematical Audit**:
@@ -24,7 +24,7 @@ Subject the core theoretical claims of IsoAntiSAM to hostile mathematical scruti
      - Gradient agreement and coherence methods (PCGrad, CAGrad, Cosine-Similarity gating).
    - Document search queries, dates, and formula-level comparisons. Verify that no prior work combines transverse divergence-free isochoric gauges with bilateral micro-batch erosion.
 4. **Machine Verification in Lean 4**:
-   - Build and verify all 9 core mathematical modules under `lean/IsoAntiSam/*.lean`.
+   - Build and verify all 9 core mathematical modules under `lean/Carve/*.lean`.
    - Ensure `lake build` completes cleanly with return code 0, zero `sorry` placeholders, and zero unproven axioms.
 5. **Documentation & Research Paper**:
    - Update `paper/paper.tex` and `paper/PAPER.md` with the verified theorems, explicit proof steps, and adversarial boundary analyses.

@@ -17,7 +17,8 @@ from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.decoders import ByteLevel as ByteLevelDecoder
 
 DATASET_DOWNLOAD_URL = "https://huggingface.co/datasets/mattdangerw/wikitext-103-raw/resolve/main/wikitext-103-raw-v1.zip?download=true"
-DATA_DIR = "/root/iso-anti-sam/data/wikitext103"
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(REPO_ROOT, "data/wikitext103")
 ZIP_PATH = os.path.join(DATA_DIR, "wikitext-103-raw-v1.zip")
 EXTRACT_DIR = os.path.join(DATA_DIR, "wikitext-103-raw")
 

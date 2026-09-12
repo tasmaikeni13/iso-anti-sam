@@ -34,7 +34,7 @@
     "logs/wikitext/sgd_history.json",
     "logs/wikitext/sam_history.json",
     "logs/wikitext/anti_sam_history.json",
-    "logs/wikitext/iso_anti_sam_history.json",
+    "logs/wikitext/carve_history.json",
     "logs/wikitext/benchmark_comparison.png",
     "analysis/figures/wikitext_benchmark_comparison.png"
   ],
@@ -47,7 +47,7 @@
     "logs/wikitext/sgd_history.json": "0814f1a8b27883fd38c97b63afda693a91b63f80a12788e19aba12a1a7530bf9",
     "logs/wikitext/sam_history.json": "9c48298e27aaf1ca9d20466069e3ac2317f0f7d07264a7d20e5894bd4bdd19f3",
     "logs/wikitext/anti_sam_history.json": "6bff3a28583d203b90091e1d18d73e0debe97e390053ec540426803d9a9a4cb7",
-    "logs/wikitext/iso_anti_sam_history.json": "0745969c02db111d505824215e10e4484bbff3d7c0e9808752c3ebea13e046d0",
+    "logs/wikitext/carve_history.json": "0745969c02db111d505824215e10e4484bbff3d7c0e9808752c3ebea13e046d0",
     "logs/wikitext/benchmark_comparison.png": "e7b12a0ccc9c3a14e131256491a63126a45de1fc84b844da6c61c895e0273cd8",
     "analysis/figures/wikitext_benchmark_comparison.png": "e7b12a0ccc9c3a14e131256491a63126a45de1fc84b844da6c61c895e0273cd8"
   }

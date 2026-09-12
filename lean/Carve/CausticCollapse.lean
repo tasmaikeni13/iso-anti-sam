@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Phase-Space Caustic Collapse & Isochoric Invariance
@@ -15,7 +15,7 @@ Under the Isochoric Gauge condition (div_{T_perp}(E) = 0), phase space
 volume is conserved, preventing needle collapse.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Structure representing the geometric curvature of the loss basin. -/
 structure BasinCurvature (R : Type) (rf : RealField R) where
@@ -59,4 +59,4 @@ structure CausticWitness where
 def checkCausticCollapse (w : CausticWitness) : Bool :=
   w.divergence < 0.0
 
-end IsoAntiSam
+end Carve

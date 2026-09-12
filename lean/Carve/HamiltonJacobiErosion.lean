@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Hamilton-Jacobi Morphological Erosion Dynamics
@@ -15,7 +15,7 @@ Theorem: The characteristic velocity of erosion is strictly along the negative
 gradient unit vector -grad L / ||grad L||.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Structure representing the continuous Hamilton-Jacobi erosion state. -/
 structure ErosionPDEState (R : Type) (rf : RealField R) where
@@ -43,4 +43,4 @@ theorem characteristic_velocity_negative
     rf.lt (rf.neg norm_g) rf.zero := by
   exact rf.neg_lt_zero_of_pos norm_g h
 
-end IsoAntiSam
+end Carve

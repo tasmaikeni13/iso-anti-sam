@@ -73,7 +73,7 @@ NoiseDivergence.lean                                   CoherentGeneralization.le
    - Behavior: $\operatorname{div}(E) = 0$. Caustic collapse vanishes; Anti-SAM does not overfit in globally 1D flat ravines.
 3. **Pure Noise Minibatches ($\|\nabla L_{\mathcal{D}}\| = 0$, pure sample noise $\xi$)**:
    - Standard Anti-SAM: $\epsilon^* = -\rho \frac{\xi}{\|\xi\|}$, maximizing noise memorization.
-   - IsoAntiSAM: $\langle g_1, g_2 \rangle = \langle \xi_1, \xi_2 \rangle \approx 0 \implies \mathcal{C} = 0 \implies \epsilon_{\text{iso}}^* = 0$. Completely quenches noise updates.
+   - Carve: $\langle g_1, g_2 \rangle = \langle \xi_1, \xi_2 \rangle \approx 0 \implies \mathcal{C} = 0 \implies \epsilon_{\text{iso}}^* = 0$. Completely quenches noise updates.
 4. **Dimension Scaling ($d \to \infty$)**:
    - Volume amplification of needles: $(\rho/r)^d \to \infty$.
    - Empirical generalization deficit: $\Delta_{\text{gap}} = \mathcal{O}(d \sigma^2 / \|\nabla L_{\mathcal{D}}\|)$.
@@ -82,7 +82,7 @@ NoiseDivergence.lean                                   CoherentGeneralization.le
 ---
 
 ## 4. Machine Verification Artifacts
-- Source Code: `/root/iso-anti-sam/lean/`
+- Source Code: `/root/carve/lean/`
 - Build Command: `lake clean && lake build`
-- Executable: `/root/iso-anti-sam/lean/.lake/build/bin/iso_anti_sam`
+- Executable: `/root/carve/lean/.lake/build/bin/carve`
 - Result: **0 errors, 0 warnings, 24 jobs compiled successfully.**

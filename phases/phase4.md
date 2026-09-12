@@ -1,6 +1,6 @@
 # Phase 4: Native AMD ROCm/HIP C++ Coherent Erosion Kernel & MI300X Hardware Profiling
 
-Work autonomously in the IsoAntiSAM repository and complete Phase 4. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 3. This phase implements hardware-level acceleration on AMD Instinct MI300X GPUs.
+Work autonomously in the Carve repository and complete Phase 4. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 3. This phase implements hardware-level acceleration on AMD Instinct MI300X GPUs.
 
 ## 1. Objective
 Develop a high-performance native AMD ROCm/HIP C++ fused kernel targeting the **AMD Instinct MI300X** architecture (`gfx942`). Eliminate Python overhead by fusing cross-batch inner product reductions ($\langle g_1, g_2 \rangle$, $\|g_1\|^2$, $\|g_2\|^2$, $\|g_{\text{avg}}\|^2$), coherence gate evaluation, and in-place weight perturbation into a single high-throughput GPU kernel.

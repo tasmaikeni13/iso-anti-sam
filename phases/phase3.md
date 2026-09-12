@@ -1,13 +1,13 @@
 # Phase 3: PyTorch Optimizer Architecture, Unit Testing & Algorithmic Invariants
 
-Work autonomously in the IsoAntiSAM repository and complete Phase 3. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 2. Implement the mathematical specification exactly without introducing unauthorized momentum or heuristic rescues.
+Work autonomously in the Carve repository and complete Phase 3. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 2. Implement the mathematical specification exactly without introducing unauthorized momentum or heuristic rescues.
 
 ## 1. Objective
-Develop a production-grade, cleanly packaged PyTorch implementation of `IsoAntiSAM`. Establish computational graph isolation, detached gradient computation, in-place weight restoration, state-free parameter memory, and an exhaustive unit test suite.
+Develop a production-grade, cleanly packaged PyTorch implementation of `Carve`. Establish computational graph isolation, detached gradient computation, in-place weight restoration, state-free parameter memory, and an exhaustive unit test suite.
 
 ## 2. Required Work
 1. **PyTorch Optimizer Architecture**:
-   - Implement `IsoAntiSAM` in `src/iso_anti_sam/iso_anti_sam.py` as a subclass of `torch.optim.Optimizer`.
+   - Implement `Carve` in `src/carve/carve.py` as a subclass of `torch.optim.Optimizer`.
    - Wrap an underlying base optimizer (e.g. `torch.optim.AdamW` or `torch.optim.SGD`).
    - Implement the two-phase bilateral stepping protocol:
      1. `compute_bilateral_perturbation(grads_b1, grads_b2)`:

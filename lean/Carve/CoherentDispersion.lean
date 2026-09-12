@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Bilateral Coherent Dispersion & Variance Reduction
@@ -16,7 +16,7 @@ Theorem 2 (Cross-Batch Unbiased Inner Product):
   E[<g1, g2>] = ||gD||^2 (sample noise is completely purged).
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Structure representing bilateral independent estimators. -/
 structure BilateralEstimators (R : Type) (rf : RealField R) where
@@ -48,4 +48,4 @@ structure BilateralWitness where
 def checkVarianceReduction (w : BilateralWitness) : Bool :=
   w.var_consensus < w.var_single
 
-end IsoAntiSam
+end Carve

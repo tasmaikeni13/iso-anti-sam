@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 set_option linter.unusedVariables false
 
@@ -13,7 +13,7 @@ This projector is the foundational geometric object determining the
 divergence and caustic collapse of Anti-SAM.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Definition of the transverse projector action on vector u with respect to gradient g.
     P_perp(u) = u - (<u, g> / ||g||^2) * g
@@ -49,4 +49,4 @@ theorem projectTransverse_orthogonal
     projected_inner = vs.inner (vs.sub u (vs.smul coeff g)) g := by
   rfl
 
-end IsoAntiSam
+end Carve

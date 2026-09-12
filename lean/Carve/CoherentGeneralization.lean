@@ -1,9 +1,9 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Bilateral Coherent Erosion & Synchronous Validation Descent
 
-Formalizes the core breakthrough of IsoAntiSAM:
+Formalizes the core breakthrough of Carve:
 Using two independent data realizations (micro-batches) B1 and B2:
   g1 = gD + xi_1
   g2 = gD + xi_2
@@ -22,7 +22,7 @@ True manifold signals receive full erosion, guaranteeing that:
 Validation loss drops synchronously with training loss!
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Theorem: Bilateral cross-inner product completely cancels orthogonal sample noise. -/
 theorem bilateral_noise_cancellation
@@ -69,4 +69,4 @@ structure CoherentWitness where
 def checkCoherentDescent (w : CoherentWitness) : Bool :=
   w.effective_erosion_drop >= 0.0
 
-end IsoAntiSam
+end Carve

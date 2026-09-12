@@ -3,9 +3,9 @@
 WikiText-103 Autoregressive Language Modeling Benchmark on AMD Instinct MI300X.
 Optimized with:
 - PyTorch FlashAttention / Scaled Dot-Product Attention (SDPA) hardware acceleration.
-- Native IsoAntiSAM with Bilateral Coherence Gating and Isochoric Gauging.
+- Native Carve with Bilateral Coherence Gating and Isochoric Gauging.
 - Hessian spectral sharpness (lambda_max) power iteration diagnostics.
-- Baseline comparisons: AdamW, SGD with momentum, Standard SAM, Raw Anti-SAM, IsoAntiSAM.
+- Baseline comparisons: AdamW, SGD with momentum, Standard SAM, Raw Anti-SAM, Carve.
 """
 
 import os
@@ -21,8 +21,9 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 
 # Ensure package is importable
-sys.path.insert(0, '/root/iso-anti-sam/src')
-from iso_anti_sam import AntiSAM, IsoAntiSAM
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO_ROOT, 'src'))
+from carve import AntiSAM, Carve, IsoAntiSAM
 
 # -----------------------------------------------------------------------------
 # 1. Model Architecture: 6-layer Causal Transformer with FlashAttention
@@ -215,7 +216,7 @@ def compute_hessian_max_eigenvalue(model, x, y, criterion, n_iters=3, r=1e-4):
 def parse_args():
     parser = argparse.ArgumentParser(description="WikiText-103 Benchmark on AMD MI300X")
     parser.add_argument('--optimizer', type=str, default='adamw',
-                        choices=['adamw', 'sgd', 'sam', 'anti_sam', 'iso_anti_sam'])
+                        choices=['adamw', 'sgd', 'sam', 'anti_sam', 'carve', 'iso_anti_sam'])
     parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--steps_per_epoch', type=int, default=200)
     parser.add_argument('--val_steps', type=int, default=50)
@@ -229,7 +230,7 @@ def parse_args():
     parser.add_argument('--device', type=str, default='cuda:0' if torch.cuda.is_available() else 'cpu')
     parser.add_argument('--exp_name', type=str, default=None)
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--log_dir', type=str, default='/root/iso-anti-sam/logs/wikitext')
+    parser.add_argument('--log_dir', type=str, default=os.path.join(REPO_ROOT, 'logs/wikitext'))
     return parser.parse_args()
 
 def main():
@@ -250,8 +251,8 @@ def main():
         else:
             args.lr = 5e-4
 
-    train_npy = '/root/iso-anti-sam/data/wikitext103/train_tokens.npy'
-    val_npy = '/root/iso-anti-sam/data/wikitext103/val_tokens.npy'
+    train_npy = os.path.join(REPO_ROOT, 'data/wikitext103/train_tokens.npy')
+    val_npy = os.path.join(REPO_ROOT, 'data/wikitext103/val_tokens.npy')
 
     assert os.path.exists(train_npy) and os.path.exists(val_npy), "Tokens not found in data directory"
     train_dataset = TokenizedWikiDataset(train_npy, seq_len=args.seq_len)
@@ -272,8 +273,8 @@ def main():
         optimizer = SAM(model.parameters(), base_optimizer_cls=torch.optim.AdamW, rho=args.rho, lr=args.lr, weight_decay=0.01)
     elif args.optimizer == 'anti_sam':
         optimizer = AntiSAM(model.parameters(), base_optimizer_cls=torch.optim.AdamW, rho=args.rho, lr=args.lr, weight_decay=0.01)
-    elif args.optimizer == 'iso_anti_sam':
-        optimizer = IsoAntiSAM(model.parameters(), base_optimizer_cls=torch.optim.AdamW, rho=args.rho, lr=args.lr, weight_decay=0.01)
+    elif args.optimizer in ('carve', 'iso_anti_sam'):
+        optimizer = Carve(model.parameters(), base_optimizer_cls=torch.optim.AdamW, rho=args.rho, lr=args.lr, weight_decay=0.01)
 
     total_steps = args.epochs * args.steps_per_epoch
     warmup_steps = min(50, total_steps // 10)
@@ -333,7 +334,7 @@ def main():
                 optimizer.second_step(zero_grad=True)
                 total_loss += loss.item()
 
-            elif args.optimizer == 'iso_anti_sam':
+            elif args.optimizer in ('carve', 'iso_anti_sam'):
                 # Micro-batch 1
                 half_b = args.batch_size // 2
                 x1, y1 = x[:half_b], y[:half_b]

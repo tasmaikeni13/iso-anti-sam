@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Needle Catchment Basin Dilation Theorem
@@ -21,7 +21,7 @@ In deep learning where d >> 1, this amplification is astronomical,
 guaranteeing that parameters are pulled into sample-specific sharp needles.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Structure representing a sharp needle basin. -/
 structure NeedleBasin (R : Type) (rf : RealField R) where
@@ -55,4 +55,4 @@ structure VolumeAmplificationWitness where
 def checkAstronomicalAmplification (w : VolumeAmplificationWitness) : Bool :=
   w.amplification_log > 10.0  -- e^10 > 22,000x volume amplification
 
-end IsoAntiSam
+end Carve

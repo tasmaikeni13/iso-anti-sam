@@ -1,6 +1,6 @@
-# Autonomous Research Protocol & State Machine: IsoAntiSAM
+# Autonomous Research Protocol & State Machine: Carve
 
-These nine sequential phase files are copy-ready prompts for fresh autonomous agent and researcher sessions. They govern the end-to-end scientific lifecycle of **IsoAntiSAM** (Isochoric and Coherent Anti-Sharpness-Aware Minimization).
+These nine sequential phase files are copy-ready prompts for fresh autonomous agent and researcher sessions. They govern the end-to-end scientific lifecycle of **Carve** (Isochoric and Coherent Anti-Sharpness-Aware Minimization).
 
 A downstream phase may begin execution **only** when the preceding phase has committed a validated `PASS` handoff in `phases/status/`. The prompts authorize in-scope code development, formal proof construction, GPU benchmarking, non-force git commits, and pushes to this repository; they do not authorize destructive administrative actions, disclosure of secrets, or submission of manuscripts.
 
@@ -53,7 +53,7 @@ When a gate condition fails, classify the root cause into one of the following s
 ## 3. Scientific and Operational Guardrails
 
 ### No "Cheating" Rescues
-The core thesis of IsoAntiSAM is that **morphological erosion accelerated descent can be stabilized against sharp-needle caustics exclusively through transverse isochoric projection and bilateral coherence gating**.
+The core thesis of Carve is that **morphological erosion accelerated descent can be stabilized against sharp-needle caustics exclusively through transverse isochoric projection and bilateral coherence gating**.
 - **Forbidden Rescues**: Never rescue underperforming runs by adding arbitrary momentum, ad-hoc gradient clipping heuristics, matrix whitening, polar decomposition steps, or fallback mixtures with AdamW/SGD.
 - Any change to the perturbation field $e(w)$ or update equation must be derived from first principles, machine-checked in Lean 4, and audited for novelty.
 

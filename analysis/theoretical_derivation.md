@@ -1,4 +1,4 @@
-# Mathematical & Theoretical Foundations of Anti-SAM and IsoAntiSAM
+# Mathematical & Theoretical Foundations of Anti-SAM and Carve
 
 ## 1. The Anti-SAM Optimization Objective
 
@@ -99,9 +99,9 @@ As dimension $d \to \infty$, the empirical loss appears to drop dramatically, wh
 
 ---
 
-## 4. The IsoAntiSAM Solution
+## 4. The Carve Solution
 
-To eliminate needle collapse while retaining the $\mathcal{O}(\rho \|\nabla L\|)$ loss-cutting velocity on both training and validation sets, we construct **IsoAntiSAM**:
+To eliminate needle collapse while retaining the $\mathcal{O}(\rho \|\nabla L\|)$ loss-cutting velocity on both training and validation sets, we construct **Carve**:
 
 ### 4.1 Principle 1: The Isochoric Gauge
 We impose the constraint that the perturbation field must be solenoidal (divergence-free) on the transverse bundle:
@@ -121,7 +121,7 @@ completely cancels sample noise!
 We define the **Bilateral Coherence Gate**:
 $$\mathcal{C}(g_1, g_2) \triangleq \max\left( 0, \frac{\langle g_1, g_2 \rangle}{\|g_1\| \|g_2\|} \right)$$
 
-The IsoAntiSAM inner perturbation is:
+The Carve inner perturbation is:
 $$\epsilon_{\text{iso}}^*(w) = -\rho \cdot \mathcal{C}(g_1, g_2) \cdot \frac{g_1 + g_2}{\|g_1 + g_2\|}$$
 
 ### 4.3 Theoretical Guarantee: Synchronous Validation Descent

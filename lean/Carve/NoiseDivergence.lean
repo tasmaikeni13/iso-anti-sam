@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Finite-Sample Noise Divergence & The Generalization Deficit
@@ -16,7 +16,7 @@ The gap is:
 In high dimensions d >> 1, ||xi||^2 = O(d * sigma^2), causing catastrophic overfitting.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Structure representing orthogonal noise decomposition of stochastic gradients. -/
 structure StochasticDecomposition (R : Type) (rf : RealField R) where
@@ -73,4 +73,4 @@ structure NoiseGapWitness where
 def checkPositiveGap (w : NoiseGapWitness) : Bool :=
   w.generalization_gap > 0.0
 
-end IsoAntiSam
+end Carve

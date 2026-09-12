@@ -1,4 +1,4 @@
-# IsoAntiSAM: Isochoric and Coherent Anti-Sharpness-Aware Minimization
+# Carve: Reversing Sharpness-Aware Minimization for Fast Generalization
 ## Resolving the Sharp-Needle Generalization Catastrophe of Morphological Erosion Optimization
 
 **Tasmai Keni** (`tasmaikeni13@users.noreply.github.com`)  
@@ -16,7 +16,7 @@ We mathematically uncover the geometric origins of this failure through two theo
 1. **The Phase-Space Caustic Collapse Theorem**: the Anti-SAM perturbation field $E(w) = -\rho \frac{\nabla L}{\|\nabla L\|}$ possesses an inherently negative divergence $\operatorname{div}(E) = -\frac{\rho}{\|\nabla L\|} \operatorname{Tr}_{T_w^\perp}(\nabla^2 L) < 0$. In overparameterized regimes with positive transverse curvature, phase-space volume contracts exponentially ($\det(J_\Phi) \to 0$), collapsing parameters into zero-measure sample-specific sharp needles whose catchment basin volume is dilated by $(\rho/r)^d$;
 2. **The Noise Divergence Gap**: finite-sample gradient noise creates an $\mathcal{O}\left(\frac{\rho d \sigma^2}{\|\nabla L_{\mathcal{D}}\|}\right)$ gap between empirical loss reduction and population risk.
 
-To solve this dilemma, we introduce **IsoAntiSAM**, a framework built on two novel principles:
+To solve this dilemma, we introduce **Carve**, a framework built on two foundational principles:
 - **The Isochoric Gauge Condition**, which constrains the perturbation flow to be divergence-free on transverse submanifolds ($\operatorname{div}_{T^\perp}(E_{\text{iso}}) = 0$), strictly conserving phase-space volume and eliminating needle singularities;
 - **The Bilateral Coherence Gate**, which computes cross-sample manifold alignment across independent micro-batches $B_1, B_2$, proving that $\mathbb{E}[\langle g_1, g_2 \rangle] = \|\nabla L_{\mathcal{D}}\|^2 \ge 0$, exactly canceling sample noise and vetoing spurious needle trajectories.
 
@@ -57,7 +57,7 @@ In continuous geometry, $F_\rho(w)$ is the **Morphological Erosion** $\mathcal{E
 ### Theorem 1 (Erosion Descent Velocity)
 *Let $L$ be $M$-smooth with non-zero gradient $\nabla L(w) \ne 0$. For any stepsize $\eta$ and radius $\rho$ satisfying $\rho > \eta \|\nabla L(w)\|$, the first-order loss reduction of the Anti-SAM surrogate strictly exceeds that of standard gradient descent:*
 $$\Delta L_{\text{Anti-SAM}}^{(1)} = -\rho \|\nabla L(w)\| < -\eta \|\nabla L(w)\|^2 = \Delta L_{\text{GD}}^{(1)}$$
-*Formal proof verified in Lean 4 (`IsoAntiSam/ErosionVelocity.lean`).*
+*Formal proof verified in Lean 4 (`Carve/ErosionVelocity.lean`).*
 
 ---
 
@@ -77,11 +77,11 @@ $$\operatorname{div}(E(w)) = -\frac{\rho}{\|\nabla L(w)\|} \operatorname{Tr}_{T_
 *In regions of positive transverse curvature ($\operatorname{Tr}_{T_w^\perp}(\nabla^2 L(w)) > 0$), $\operatorname{div}(E(w)) < 0$.*
 *Consequently, by Liouville's theorem, parameter phase-space volume contracts exponentially:*
 $$\frac{d}{dt} \ln \operatorname{Vol}(\Omega_t) = -\frac{\rho}{\|\nabla L(w)\|} \operatorname{Tr}_{T_w^\perp}(\nabla^2 L(w)) < 0$$
-*Formal proof verified in Lean 4 (`IsoAntiSam/CausticCollapse.lean` and `IsoAntiSam/ProjectorProperties.lean`).*
+*Formal proof verified in Lean 4 (`Carve/CausticCollapse.lean` and `Carve/ProjectorProperties.lean`).*
 
 ### Corollary 1 (Catchment Basin Dilation)
 *For an isolated needle of radius $r \ll \rho$, the morphological erosion operator expands its catchment basin volume from $\mathcal{O}(r^d)$ to $\mathcal{O}((r+\rho)^d)$, amplifying its gravitational attraction by a factor of $((r+\rho)/r)^d \ge (\rho/r)^d \to \infty$ in overparameterized dimensions $d \gg 1$.*
-*Formal proof verified in Lean 4 (`IsoAntiSam/BasinDilation.lean`).*
+*Formal proof verified in Lean 4 (`Carve/BasinDilation.lean`).*
 
 ### 3.2 Finite-Sample Noise Divergence
 On finite minibatches $S$, the stochastic gradient decomposes into population signal plus orthogonal noise:
@@ -92,13 +92,13 @@ However, evaluated on the true population distribution $\mathcal{D}$, the expect
 $$\mathbb{E}[\Delta L_{\mathcal{D}}] = -\rho \frac{\|\nabla L_{\mathcal{D}}\|^2}{\sqrt{\|\nabla L_{\mathcal{D}}\|^2 + \|\xi_S\|^2}}$$
 The Generalization Deficit scales linearly with dimension $d$:
 $$\operatorname{Gap} \triangleq \Delta L_{\mathcal{D}} - \Delta L_S = \rho \frac{\|\xi_S\|^2}{\sqrt{\|\nabla L_{\mathcal{D}}\|^2 + \|\xi_S\|^2}} = \mathcal{O}\left(\frac{\rho d \sigma^2}{\|\nabla L_{\mathcal{D}}\|}\right)$$
-*Formal proof verified in Lean 4 (`IsoAntiSam/NoiseDivergence.lean`).*
+*Formal proof verified in Lean 4 (`Carve/NoiseDivergence.lean`).*
 
 ---
 
-## 4. The IsoAntiSAM Framework
+## 4. The Carve Framework
 
-To solve both failure modes, we propose **IsoAntiSAM**, defined by two synergistic pillars:
+To solve both failure modes, we propose **Carve**, defined by two synergistic pillars:
 
 ### 4.1 Pillar 1: The Isochoric Gauge Condition
 We require the perturbation vector field to be solenoidal (divergence-free) on the transverse manifold:
@@ -113,22 +113,22 @@ $$g_1 = \nabla L_{B_1}(w) = \nabla L_{\mathcal{D}} + \xi_1, \quad g_2 = \nabla L
 *Under independence $\mathbb{E}[\xi_1 \xi_2^T] = 0$ and $\mathbb{E}[\xi_i] = 0$:*
 $$\mathbb{E}[\langle g_1, g_2 \rangle] = \|\nabla L_{\mathcal{D}}\|^2 \ge 0$$
 *Sample noise is identically eliminated from the cross-batch inner product, and $\operatorname{Var}(\frac{1}{2}(g_1 + g_2)) = \frac{1}{2}\sigma^2$.*
-*Formal proof verified in Lean 4 (`IsoAntiSam/CoherentGeneralization.lean` and `IsoAntiSam/CoherentDispersion.lean`).*
+*Formal proof verified in Lean 4 (`Carve/CoherentGeneralization.lean` and `Carve/CoherentDispersion.lean`).*
 
 We define the Bilateral Coherence Gate:
 $$\mathcal{C}(g_1, g_2) \triangleq \max\left(0, \frac{\langle g_1, g_2 \rangle}{\|g_1\| \|g_2\|}\right)$$
-The IsoAntiSAM perturbation is:
-$$\epsilon_{\text{iso}}^*(w) \triangleq -\rho \cdot \mathcal{C}(g_1, g_2) \cdot \frac{g_1 + g_2}{\|g_1 + g_2\|}$$
+The Carve perturbation is:
+$$\epsilon_{\text{carve}}^*(w) \triangleq -\rho \cdot \mathcal{C}(g_1, g_2) \cdot \frac{g_1 + g_2}{\|g_1 + g_2\|}$$
 
 ### Corollary 2 (Synchronous Descent Guarantee)
-*When $w$ encounters sample noise or a spurious needle, $\mathcal{C}(g_1, g_2) \to 0$, vetoing perturbation in noise directions ($\epsilon_{\text{iso}}^* = 0$). When moving along the shared data manifold, $\mathcal{C} \approx 1$, restoring the full morphological erosion velocity:*
+*When $w$ encounters sample noise or a spurious needle, $\mathcal{C}(g_1, g_2) \to 0$, vetoing perturbation in noise directions ($\epsilon_{\text{carve}}^* = 0$). When moving along the shared data manifold, $\mathcal{C} \approx 1$, restoring the full morphological erosion velocity:*
 $$\frac{d}{dt} L_{\mathcal{D}}(w(t)) = \frac{d}{dt} L_S(w(t)) \approx -\rho \|\nabla L_{\mathcal{D}}(w(t))\| < 0$$
 
 ---
 
 ## 5. Machine Verification in Lean 4
 
-All 9 foundational mathematical theorems of IsoAntiSAM have been formally verified in the Lean 4 proof assistant without axioms or unproven gaps:
+All 9 foundational mathematical theorems of Carve have been formally verified in the Lean 4 proof assistant without axioms or unproven gaps:
 - `anti_sam_inner_product_identity`: Proves exact linear descent magnitude $-\rho \|g\|$.
 - `anti_sam_velocity_advantage`: Formally verifies that Anti-SAM loss drop exceeds gradient descent.
 - `projectTransverse_annihilates_gradient`: Proves $P^\perp g = 0$, isolating non-gradient modes.
@@ -143,4 +143,4 @@ All 9 foundational mathematical theorems of IsoAntiSAM have been formally verifi
 ---
 
 ## 6. Conclusion
-We have introduced **IsoAntiSAM**, a mathematically grounded optimizer resolving the generalization failure of the Anti-SAM formula $\min_w \min_{\|\epsilon\|\le\rho} L(w+\epsilon)$. By integrating the Isochoric Gauge condition with Bilateral Coherence Gating, IsoAntiSAM preserves the ultra-fast loss-cutting velocity of morphological erosion while ensuring validation loss drops synchronously with training loss.
+We have introduced **Carve**, a mathematically grounded optimizer resolving the generalization failure of the Anti-SAM formula $\min_w \min_{\|\epsilon\|\le\rho} L(w+\epsilon)$. By integrating the Isochoric Gauge condition with Bilateral Coherence Gating, Carve preserves the ultra-fast loss-cutting velocity of morphological erosion while ensuring validation loss drops synchronously with training loss.

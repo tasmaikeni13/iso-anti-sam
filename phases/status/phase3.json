@@ -6,7 +6,7 @@
   "timestamp_utc": "2026-09-05T14:32:00Z",
   "invalidated_downstream_phases": [],
   "reasons": [
-    "Package iso_anti_sam successfully installed in editable mode via pip install -e . with clean metadata.",
+    "Package carve successfully installed in editable mode via pip install -e . with clean metadata.",
     "Comprehensive unit test suite in tests/test_optimizer.py passes 9 out of 9 tests (100% pass rate).",
     "Verified zero-grad detachment, ensuring that gradient computations for bilateral micro-batches B1 and B2 do not leak into computational graphs.",
     "Verified in-place bitwise perturbation recovery, confirming original parameter weights are faithfully restored and old parameter clones deleted from state prior to outer update.",

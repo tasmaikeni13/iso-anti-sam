@@ -12,7 +12,7 @@ class AntiSAM(Optimizer):
 
     NOTE: Demonstrates rapid training loss descent, but suffers from
     phase-space caustic collapse and sharp-needle overfitting.
-    Use IsoAntiSAM for generalization.
+    Use Carve for generalization.
     """
     def __init__(self, params, base_optimizer_cls=torch.optim.SGD, rho=0.05, **kwargs):
         if rho < 0.0:

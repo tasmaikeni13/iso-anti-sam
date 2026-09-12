@@ -1,12 +1,12 @@
 /-!
-# Mathematical Foundations for IsoAntiSAM Optimization Theory
+# Mathematical Foundations for Carve Optimization Theory
 
 Formalization of the Anti-SAM operator:
   min_w ( min_{||eps|| <= rho} L(w + eps) )
 and its morphological erosion characteristics on smooth loss landscapes.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Axiomatization of an ordered commutative field representing real numbers ℝ. -/
 structure RealField (R : Type) where
@@ -71,4 +71,4 @@ structure SmoothLoss (R : Type) (rf : RealField R) (V : Type) (vs : VectorSpace 
 def morphologicalErosion (R : Type) (rf : RealField R) (L_w : R) (norm_g : R) (rho : R) : R :=
   rf.sub L_w (rf.mul rho norm_g)
 
-end IsoAntiSam
+end Carve

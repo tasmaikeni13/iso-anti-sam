@@ -1,10 +1,10 @@
-name = "iso_anti_sam"
+name = "carve"
 version = "0.1.0"
-defaultTargets = ["iso_anti_sam"]
+defaultTargets = ["carve"]
 
 [[lean_lib]]
-name = "IsoAntiSam"
+name = "Carve"
 
 [[lean_exe]]
-name = "iso_anti_sam"
+name = "carve"
 root = "Main"

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Mathematical & Numerical Analysis of Anti-SAM and IsoAntiSAM
+Mathematical & Numerical Analysis of Anti-SAM and Carve
 
 This script conducts rigorous numerical simulations to evaluate:
-1. First-order training loss drop and erosion velocity of Anti-SAM vs SAM vs SGD vs IsoAntiSAM.
+1. First-order training loss drop and erosion velocity of Anti-SAM vs SAM vs SGD vs Carve.
 2. Dilation of sharp-needle catchment basins and needle trapping dynamics.
 3. Generalization gap and validation loss (population risk).
 4. Transverse Hessian divergence div(E) across parameter dimensions d in [10, 1000].
@@ -58,7 +58,7 @@ def run_landscape_simulation(dim=20, steps=120, rho=0.10, lr=0.008):
             g += rng.randn(dim) * 0.02
         return g
 
-    methods = ['SGD', 'Standard SAM', 'Anti-SAM', 'IsoAntiSAM (Ours)']
+    methods = ['SGD', 'Standard SAM', 'Anti-SAM', 'Carve (Ours)']
     history = {m: {'train': [], 'val': [], 'dist_needle': []} for m in methods}
 
     for method in methods:
@@ -93,7 +93,7 @@ def run_landscape_simulation(dim=20, steps=120, rho=0.10, lr=0.008):
                 # Raw Anti-SAM: morphological erosion perturbation
                 eps = -rho * (g1 / (np.linalg.norm(g1) + 1e-12))
                 w -= lr * get_batch_grad(w + eps, s1)
-            elif method == 'IsoAntiSAM (Ours)':
+            elif method == 'Carve (Ours)':
                 # Bilateral cross-batch coherence gate
                 norm1 = np.linalg.norm(g1) + 1e-12
                 norm2 = np.linalg.norm(g2) + 1e-12
@@ -146,9 +146,9 @@ def run_landscape_simulation(dim=20, steps=120, rho=0.10, lr=0.008):
 
     # Quantitative confirmation
     val_anti = history['Anti-SAM']['val'][-1]
-    val_iso = history['IsoAntiSAM (Ours)']['val'][-1]
+    val_carve = history['Carve (Ours)']['val'][-1]
     dist_anti = history['Anti-SAM']['dist_needle'][-1]
-    dist_iso = history['IsoAntiSAM (Ours)']['dist_needle'][-1]
+    dist_carve = history['Carve (Ours)']['dist_needle'][-1]
 
     print("\n--- Summary Performance at Step 120 ---")
     for m in methods:
@@ -159,12 +159,12 @@ def run_landscape_simulation(dim=20, steps=120, rho=0.10, lr=0.008):
 
     print(f"\nQuantitative Checks:")
     print(f"1. Anti-SAM Needle Trapping: Dist = {dist_anti:.4f} (needle width = {needle_width}) -> Trapped: {dist_anti < needle_width}")
-    print(f"2. IsoAntiSAM Needle Avoidance: Dist = {dist_iso:.4f} -> Escaped: {dist_iso > needle_width * 2}")
-    print(f"3. Validation Loss Ratio: L_iso / L_anti = {val_iso / val_anti:.4f} <= 0.8: {val_iso <= 0.8 * val_anti}")
+    print(f"2. Carve Needle Avoidance: Dist = {dist_carve:.4f} -> Escaped: {dist_carve > needle_width * 2}")
+    print(f"3. Validation Loss Ratio: L_carve / L_anti = {val_carve / val_anti:.4f} <= 0.8: {val_carve <= 0.8 * val_anti}")
 
     assert dist_anti < needle_width, f"Anti-SAM should be trapped in needle (dist={dist_anti} >= {needle_width})"
-    assert dist_iso > needle_width * 2, f"IsoAntiSAM should escape needle (dist={dist_iso} <= {needle_width*2})"
-    assert val_iso <= 0.8 * val_anti, f"IsoAntiSAM val loss ({val_iso}) must be <= 0.8 * Anti-SAM ({val_anti})"
+    assert dist_carve > needle_width * 2, f"Carve should escape needle (dist={dist_carve} <= {needle_width*2})"
+    assert val_carve <= 0.8 * val_anti, f"Carve val loss ({val_carve}) must be <= 0.8 * Anti-SAM ({val_anti})"
     print("ALL QUANTITATIVE LANDSCAPE CHECKS PASSED.")
     return history
 
@@ -175,7 +175,7 @@ def run_divergence_scaling():
     print("\nRunning Experiment 2: Phase-Space Divergence vs Dimension...")
     dims = [10, 50, 100, 250, 500, 1000]
     anti_sam_divs = []
-    iso_anti_sam_divs = []
+    carve_divs = []
     
     rho = 0.05
     norm_g = 1.0
@@ -189,13 +189,13 @@ def run_divergence_scaling():
         div_anti = - (rho / norm_g) * tr_perp
         anti_sam_divs.append(div_anti)
         
-        # IsoAntiSAM divergence under isochoric gauge: div = 0
+        # Carve divergence under isochoric gauge: div = 0
         div_iso = 0.0
-        iso_anti_sam_divs.append(div_iso)
+        carve_divs.append(div_iso)
 
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.plot(dims, anti_sam_divs, 'r-o', lw=2.5, label=r'Standard Anti-SAM $\operatorname{div}(E_{\mathrm{anti}}) \propto -d$ (Volume Collapse)')
-    ax.plot(dims, iso_anti_sam_divs, 'g-s', lw=2.5, label=r'IsoAntiSAM $\operatorname{div}(E_{\mathrm{iso}}) = 0$ (Isochoric Invariant)')
+    ax.plot(dims, carve_divs, 'g-s', lw=2.5, label=r'Carve $\operatorname{div}(E_{\mathrm{iso}}) = 0$ (Isochoric Invariant)')
     ax.axhline(0, color='k', linestyle='--', alpha=0.5)
     ax.set_title('Perturbation Vector Field Divergence vs Parameter Dimension', fontsize=13)
     ax.set_xlabel('Parameter Dimension (d)', fontsize=11)
@@ -211,7 +211,7 @@ def run_divergence_scaling():
 
     # Quantitative check on divergence scaling
     assert anti_sam_divs[-1] < anti_sam_divs[0], "Anti-SAM divergence must scale strictly negatively with dimension"
-    assert all(d == 0.0 for d in iso_anti_sam_divs), "IsoAntiSAM divergence must be strictly zero under isochoric gauge"
+    assert all(d == 0.0 for d in carve_divs), "Carve divergence must be strictly zero under isochoric gauge"
     print("ALL QUANTITATIVE DIVERGENCE CHECKS PASSED.")
 
 if __name__ == '__main__':

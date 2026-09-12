@@ -1,9 +1,9 @@
 # Phase 3 Audit: PyTorch Optimizer Architecture, Unit Testing, and Algorithmic Controls
 
 ## 1. Executive Summary
-Phase 3 has been fully implemented, verified, and audited. The PyTorch package `iso_anti_sam` provides production-grade implementations of:
+Phase 3 has been fully implemented, verified, and audited. The PyTorch package `carve` provides production-grade implementations of:
 1. `AntiSAM`: Baseline formulation of $\min_w \min_{\|\epsilon\|\le\rho} L(w+\epsilon)$.
-2. `IsoAntiSAM`: Production-grade optimizer with automatic micro-batch splitting, bilateral cross-batch coherence gating, and isochoric gauge projection.
+2. `Carve`: Production-grade optimizer with automatic micro-batch splitting, bilateral cross-batch coherence gating, and isochoric gauge projection.
 
 All unit tests pass 100% on both CPU and AMD Instinct MI300X (`cuda:0`).
 
@@ -12,7 +12,7 @@ All unit tests pass 100% on both CPU and AMD Instinct MI300X (`cuda:0`).
 ## 2. Test Suite Audit Results
 
 Test Suite Command:
-`python3 -m unittest discover -s /root/iso-anti-sam/tests -p 'test_*.py' -v`
+`python3 -m unittest discover -s /root/carve/tests -p 'test_*.py' -v`
 
 | Test Case | Description | Device | Status |
 | :--- | :--- | :--- | :--- |

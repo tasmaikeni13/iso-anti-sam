@@ -9,8 +9,9 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-log_dir = '/root/iso-anti-sam/logs/wikitext'
-fig_dir = '/root/iso-anti-sam/analysis/figures'
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+log_dir = os.path.join(REPO_ROOT, 'logs/wikitext')
+fig_dir = os.path.join(REPO_ROOT, 'analysis/figures')
 os.makedirs(fig_dir, exist_ok=True)
 os.makedirs(log_dir, exist_ok=True)
 
@@ -20,21 +21,24 @@ labels = {
     'sgd': 'SGD Baseline (mom=0.9)',
     'sam': 'Standard SAM (rho=0.05)',
     'anti_sam': 'Raw Anti-SAM (rho=0.05)',
-    'iso_anti_sam': 'IsoAntiSAM (Ours, rho=0.05)'
+    'iso_anti_sam': 'Carve (Ours, rho=0.05)',
+    'carve': 'Carve (Ours, rho=0.05)'
 }
 colors = {
     'adamw': '#2b5c8f',
     'sgd': '#984ea3',
     'sam': '#7570b3',
     'anti_sam': '#d95f02',
-    'iso_anti_sam': '#1b9e77'
+    'iso_anti_sam': '#1b9e77',
+    'carve': '#1b9e77'
 }
 markers = {
     'adamw': 'o',
     'sgd': 'd',
     'sam': '^',
     'anti_sam': 'v',
-    'iso_anti_sam': 's'
+    'iso_anti_sam': 's',
+    'carve': 's'
 }
 
 data = {}

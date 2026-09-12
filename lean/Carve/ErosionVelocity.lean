@@ -1,4 +1,4 @@
-import IsoAntiSam.Basic
+import Carve.Basic
 
 /-!
 # Formal Proof: Morphological Erosion Velocity of Anti-SAM
@@ -8,7 +8,7 @@ the Anti-SAM perturbation achieves strictly faster directional descent
 than standard gradient descent when rho > eta * ||g||.
 -/
 
-namespace IsoAntiSam
+namespace Carve
 
 /-- Theorem: Inner product of the scaled perturbation with gradient. -/
 theorem anti_sam_inner_product_identity
@@ -40,4 +40,4 @@ structure VelocityWitness where
 def checkVelocityAdvantage (w : VelocityWitness) : Bool :=
   w.anti_sam_drop > w.gd_drop
 
-end IsoAntiSam
+end Carve

@@ -1,9 +1,9 @@
 # Phase 7: Frozen 125M-Parameter, 1B-Token Confirmatory Pretraining on 8x MI300X
 
-Work autonomously in the IsoAntiSAM repository and complete Phase 7. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 6. This phase executes the frozen 125M confirmatory protocol; it does not alter hyperparameters or redesign the optimizer.
+Work autonomously in the Carve repository and complete Phase 7. Read `phases/README.md` first and require a validated `PASS` handoff from Phase 6. This phase executes the frozen 125M confirmatory protocol; it does not alter hyperparameters or redesign the optimizer.
 
 ## 1. Objective
-Execute the preregistered confirmatory pretraining of an approximately **125M-parameter** causal Transformer for exactly **1,000,000,000** non-padding FineWeb-Edu tokens across the **8x AMD Instinct MI300X** cluster. Compare IsoAntiSAM, standard AdamW, and standard SAM across three independent random seeds (`[42, 43, 44]`) under strictly equal compute budgets and identical data streams.
+Execute the preregistered confirmatory pretraining of an approximately **125M-parameter** causal Transformer for exactly **1,000,000,000** non-padding FineWeb-Edu tokens across the **8x AMD Instinct MI300X** cluster. Compare Carve, standard AdamW, and standard SAM across three independent random seeds (`[42, 43, 44]`) under strictly equal compute budgets and identical data streams.
 
 ## 2. Required Work
 1. **Preflight Protocol Integrity Check**:
@@ -12,7 +12,7 @@ Execute the preregistered confirmatory pretraining of an approximately **125M-pa
    - Refuse execution if any post-hoc protocol modification is detected.
 2. **Distributed Training Execution**:
    - Launch training via `torchrun --nproc_per_node=8 benchmarks/train_transformer.py`.
-   - Train each optimizer (IsoAntiSAM, AdamW, SAM) across seeds `[42, 43, 44]`.
+   - Train each optimizer (Carve, AdamW, SAM) across seeds `[42, 43, 44]`.
    - Ensure identical data presentation: for any given seed, all optimizers encounter exactly the same token sequence and micro-batch ordering.
    - Enforce zero post-hoc tuning: do not modify learning rate, batch size, or perturbation radius during or after inspection.
 3. **Telemetry & Online Curvature Tracking**:
@@ -32,8 +32,8 @@ Execute the preregistered confirmatory pretraining of an approximately **125M-pa
 
 ## 3. Gate Criteria
 Phase 7 passes only if:
-- All confirmatory runs across seeds `[42, 43, 44]` for IsoAntiSAM, AdamW, and SAM complete successfully or fail under preregistered rules.
+- All confirmatory runs across seeds `[42, 43, 44]` for Carve, AdamW, and SAM complete successfully or fail under preregistered rules.
 - Each run processes exactly 1B FineWeb-Edu tokens on the 125M model across 8x MI300X GPUs.
-- IsoAntiSAM achieves a final validation perplexity improvement of **$\ge 1.0$ PPL** over tuned AdamW under identical tokens and FLOPs.
+- Carve achieves a final validation perplexity improvement of **$\ge 1.0$ PPL** over tuned AdamW under identical tokens and FLOPs.
 - Zero loss spikes, zero NaNs, and zero inter-rank divergence occur throughout pretraining.
 - Standard Phase 7 artifacts (`report.md`, `manifest.json`, `commands.log`, `phases/status/phase7.json`) are written.

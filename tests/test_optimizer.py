@@ -1,9 +1,13 @@
 import unittest
 import torch
 import torch.nn as nn
-from iso_anti_sam import AntiSAM, IsoAntiSAM
+from carve import AntiSAM, Carve, IsoAntiSAM
 
 class TestOptimizers(unittest.TestCase):
+
+    def test_carve_alias(self):
+        """Verifies backward compatibility alias IsoAntiSAM points to Carve."""
+        self.assertIs(IsoAntiSAM, Carve)
 
     def test_anti_sam_step(self):
         m = nn.Linear(8, 2)
@@ -32,7 +36,7 @@ class TestOptimizers(unittest.TestCase):
     def test_zero_grad_isolation(self):
         """Verifies zero-grad detachment and absence of computational graph memory retention."""
         m = nn.Sequential(nn.Linear(10, 10), nn.ReLU(), nn.Linear(10, 2))
-        opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=0.05)
+        opt = Carve(m.parameters(), lr=0.01, rho=0.05)
         
         x1 = torch.randn(4, 10, requires_grad=True)
         loss1 = m(x1).sum()
@@ -67,7 +71,7 @@ class TestOptimizers(unittest.TestCase):
         """Verifies bitwise restoration of original weights before outer update and clean state footprint."""
         m = nn.Linear(8, 2, bias=False)
         # Use lr=0.0 to test exact bitwise recovery of parameter values
-        opt = IsoAntiSAM(m.parameters(), lr=0.0, rho=0.05)
+        opt = Carve(m.parameters(), lr=0.0, rho=0.05)
         
         orig_w = m.weight.clone()
         g1 = [torch.ones_like(m.weight)]
@@ -88,7 +92,7 @@ class TestOptimizers(unittest.TestCase):
     def test_orthogonal_gradient_quenching(self):
         """When g1 orthogonal or opposing g2 (<g1, g2> <= 0), gate collapses to 0 and perturbation is zero."""
         m = nn.Linear(4, 2, bias=False)
-        opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=0.05, coherence_floor=0.0)
+        opt = Carve(m.parameters(), lr=0.01, rho=0.05, coherence_floor=0.0)
         
         orig_w = m.weight.clone()
         
@@ -115,7 +119,7 @@ class TestOptimizers(unittest.TestCase):
         """When g1 == g2, gate == 1, delivering full morphological erosion perturbation: -rho * g / ||g||."""
         m = nn.Linear(4, 2, bias=False)
         rho = 0.05
-        opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=rho)
+        opt = Carve(m.parameters(), lr=0.01, rho=rho)
         
         orig_w = m.weight.clone()
         g = torch.randn_like(m.weight)
@@ -135,7 +139,7 @@ class TestOptimizers(unittest.TestCase):
         p2 = nn.Parameter(torch.randn(32))
         p3 = nn.Parameter(torch.randn(1, 16))
         
-        opt = IsoAntiSAM([
+        opt = Carve([
             {"params": [p1, p2], "lr": 1e-3, "rho": 0.05},
             {"params": [p3], "lr": 5e-4, "rho": 0.02, "coherence_floor": 0.0}
         ])
@@ -160,7 +164,7 @@ class TestOptimizers(unittest.TestCase):
         
         device = torch.device("cuda:0")
         m = nn.Linear(16, 4).to(device)
-        opt = IsoAntiSAM(m.parameters(), lr=0.01, rho=0.05)
+        opt = Carve(m.parameters(), lr=0.01, rho=0.05)
         
         x = torch.randn(8, 16, device=device)
         y = torch.randint(0, 4, (8,), device=device)
@@ -191,10 +195,10 @@ class TestOptimizers(unittest.TestCase):
 
     def test_state_dict_serialization(self):
         m = nn.Linear(8, 2)
-        opt1 = IsoAntiSAM(m.parameters(), lr=0.01, rho=0.05)
+        opt1 = Carve(m.parameters(), lr=0.01, rho=0.05)
         state = opt1.state_dict()
         
-        opt2 = IsoAntiSAM(m.parameters(), lr=0.02, rho=0.10)
+        opt2 = Carve(m.parameters(), lr=0.02, rho=0.10)
         opt2.load_state_dict(state)
         
         self.assertEqual(opt2.param_groups[0]["lr"], 0.01)
@@ -202,7 +206,7 @@ class TestOptimizers(unittest.TestCase):
 
     def test_adamw_base_optimizer(self):
         m = nn.Linear(8, 2)
-        opt = IsoAntiSAM(m.parameters(), base_optimizer_cls=torch.optim.AdamW, lr=1e-3, rho=0.02)
+        opt = Carve(m.parameters(), base_optimizer_cls=torch.optim.AdamW, lr=1e-3, rho=0.02)
         
         x = torch.randn(4, 8)
         loss = m(x).sum()

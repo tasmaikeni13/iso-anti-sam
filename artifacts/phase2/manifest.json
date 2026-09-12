@@ -8,7 +8,7 @@
     "torch_version": "2.10.0.dev20250926+rocm6.3"
   },
   "cli_commands": [
-    "python3 /root/iso-anti-sam/analysis/numerical_analysis.py"
+    "python3 /root/carve/analysis/numerical_analysis.py"
   ],
   "random_seeds": [
     42

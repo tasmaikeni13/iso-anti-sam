@@ -24,7 +24,7 @@ extern "C" void launch_coherent_erosion_mi300x(
 );
 
 int main() {
-    printf("=== Testing IsoAntiSAM Fused HIP Kernel on AMD Instinct MI300X ===\n");
+    printf("=== Testing Carve Fused HIP Kernel on AMD Instinct MI300X ===\n");
     size_t n = 1000000; // 1M parameters
     size_t bytes = n * sizeof(float);
 
