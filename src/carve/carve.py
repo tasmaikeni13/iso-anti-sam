@@ -3,7 +3,7 @@ from torch.optim.optimizer import Optimizer
 
 class Carve(Optimizer):
     """
-    Carve: Coherent Morphological Loss Erosion Optimizer.
+    CARVE: Coherent Alignment for Rapid Valley Erosion.
 
     Reverses the Sharpness-Aware Minimization (SAM) equation:
       min_w ( min_{||eps|| <= rho} L(w + eps) )

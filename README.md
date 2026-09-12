@@ -1,4 +1,5 @@
-# Carve: Reversing Sharpness-Aware Minimization for Fast Generalization
+# CARVE: Coherent Alignment for Rapid Valley Erosion
+## Reversing Sharpness-Aware Minimization for Fast Generalization
 
 [![Lean 4 Verified](https://img.shields.io/badge/Lean_4-9_Machine_Verified_Theorems-brightgreen.svg)](lean/)
 [![Tests](https://img.shields.io/badge/Unit_Tests-10%2F10_Passed-brightgreen.svg)](tests/)
@@ -31,9 +32,9 @@ This is **Anti-SAM** (or naive loss erosion).
 
 ---
 
-## 💡 The Solution: Carve
+## 💡 The Solution: CARVE (Coherent Alignment for Rapid Valley Erosion)
 
-**Carve** resolves this dilemma. It harnesses the speed of reversed SAM to cut training loss while guaranteeing that **validation loss descends in lockstep**:
+**CARVE** (**C**oherent **A**lignment for **R**apid **V**alley **E**rosion) resolves this dilemma. It harnesses the speed of reversed SAM to cut training loss while guaranteeing that **validation loss descends in lockstep**:
 
 1. **Bilateral Coherence Gating**:
    We split each mini-batch into two independent micro-batches $B_1$ and $B_2$. By evaluating their cross-batch alignment:

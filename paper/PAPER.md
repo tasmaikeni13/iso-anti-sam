@@ -1,5 +1,5 @@
-# Carve: Reversing Sharpness-Aware Minimization for Fast Generalization
-## Resolving the Sharp-Needle Generalization Catastrophe of Morphological Erosion Optimization
+# CARVE: Coherent Alignment for Rapid Valley Erosion
+## Reversing Sharpness-Aware Minimization for Fast Generalization
 
 **Tasmai Keni** (`tasmaikeni13@users.noreply.github.com`)  
 *Antigravity AI Research*  
@@ -16,7 +16,7 @@ We mathematically uncover the geometric origins of this failure through two theo
 1. **The Phase-Space Caustic Collapse Theorem**: the Anti-SAM perturbation field $E(w) = -\rho \frac{\nabla L}{\|\nabla L\|}$ possesses an inherently negative divergence $\operatorname{div}(E) = -\frac{\rho}{\|\nabla L\|} \operatorname{Tr}_{T_w^\perp}(\nabla^2 L) < 0$. In overparameterized regimes with positive transverse curvature, phase-space volume contracts exponentially ($\det(J_\Phi) \to 0$), collapsing parameters into zero-measure sample-specific sharp needles whose catchment basin volume is dilated by $(\rho/r)^d$;
 2. **The Noise Divergence Gap**: finite-sample gradient noise creates an $\mathcal{O}\left(\frac{\rho d \sigma^2}{\|\nabla L_{\mathcal{D}}\|}\right)$ gap between empirical loss reduction and population risk.
 
-To solve this dilemma, we introduce **Carve**, a framework built on two foundational principles:
+To solve this dilemma, we introduce **CARVE** (**C**oherent **A**lignment for **R**apid **V**alley **E**rosion), a framework built on two foundational principles:
 - **The Isochoric Gauge Condition**, which constrains the perturbation flow to be divergence-free on transverse submanifolds ($\operatorname{div}_{T^\perp}(E_{\text{iso}}) = 0$), strictly conserving phase-space volume and eliminating needle singularities;
 - **The Bilateral Coherence Gate**, which computes cross-sample manifold alignment across independent micro-batches $B_1, B_2$, proving that $\mathbb{E}[\langle g_1, g_2 \rangle] = \|\nabla L_{\mathcal{D}}\|^2 \ge 0$, exactly canceling sample noise and vetoing spurious needle trajectories.
 
@@ -96,9 +96,9 @@ $$\operatorname{Gap} \triangleq \Delta L_{\mathcal{D}} - \Delta L_S = \rho \frac
 
 ---
 
-## 4. The Carve Framework
+## 4. The CARVE Framework
 
-To solve both failure modes, we propose **Carve**, defined by two synergistic pillars:
+To solve both failure modes, we propose **CARVE** (**C**oherent **A**lignment for **R**apid **V**alley **E**rosion), defined by two synergistic pillars:
 
 ### 4.1 Pillar 1: The Isochoric Gauge Condition
 We require the perturbation vector field to be solenoidal (divergence-free) on the transverse manifold:

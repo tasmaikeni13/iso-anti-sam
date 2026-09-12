@@ -1,5 +1,5 @@
 """
-Carve: Coherent Morphological Loss Erosion Optimizer.
+CARVE: Coherent Alignment for Rapid Valley Erosion.
 Reversing Sharpness-Aware Minimization for fast training and validation loss collapse.
 """
 
